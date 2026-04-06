@@ -1,45 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Andre Moura</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/styles.min.css">
+    <link rel="stylesheet" href="assets/css/frutiger-aero.css">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-158383921-1"></script>
     <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'UA-158383921-1');
     </script>
-
 </head>
 
 <body>
-    <nav class="navbar navbar-light navbar-expand-md">
-        <div class="container-fluid"><a class="navbar-brand" href="https://andremoura.ca/"><strong>ANDRE MOURA</strong></a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div
-                class="collapse navbar-collapse" id="navcol-1">
+
+    <!-- Background effects -->
+    <div class="light-rays"></div>
+    <div class="water-line"></div>
+    <div class="clouds">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+        <div class="cloud cloud-4"></div>
+    </div>
+    <div class="bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+    <div class="fish-container">
+        <div class="fish fish-1">🐠</div>
+        <div class="fish fish-2">🐟</div>
+        <div class="fish fish-3">🐬</div>
+        <div class="fish fish-4">🐡</div>
+        <div class="fish fish-5">🐠</div>
+        <div class="fish fish-6">🐟</div>
+        <div class="fish fish-7">🐠</div>
+    </div>
+    <div class="sparkles">
+        <div class="sparkle sparkle-1"></div>
+        <div class="sparkle sparkle-2"></div>
+        <div class="sparkle sparkle-3"></div>
+        <div class="sparkle sparkle-4"></div>
+        <div class="sparkle sparkle-5"></div>
+        <div class="sparkle sparkle-6"></div>
+        <div class="sparkle sparkle-7"></div>
+        <div class="sparkle sparkle-8"></div>
+        <div class="sparkle sparkle-9"></div>
+        <div class="sparkle sparkle-10"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="https://andremoura.ca/"><strong>ANDRE MOURA</strong></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navcol-1" aria-controls="navcol-1" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link active" href="https://andremoura.ca/404">Resume</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://andremoura.ca/404">About Me</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://linktr.ee/anch2797">Social Media</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://linktr.ee/anch2797">Links</a></li>
+                    <li class="nav-item"><a class="nav-link" href="resume.html">Resume</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About Me</a></li>
+                    <li class="nav-item"><a class="nav-link" href="social.html">Social Media</a></li>
+                    <li class="nav-item"><a class="nav-link" href="social.html">Links</a></li>
                 </ul>
-        </div>
+            </div>
         </div>
     </nav>
-    <div id="welcome" style="text-align: center;padding: 40px;background: url(assets/img/vapor2.jpg) no-repeat;background-size: cover;">
-        <div class="jumbotron">
-            <h1>Welcome.</h1>
-            <p>My name is Andre Moura and this is my site. This site will evolve as time goes on but feel free to look around. Click the links at the top or buttons below to explore and connect with me on social media.<br></p>
-            <p><a class="btn btn-primary" role="button" href="https://andremoura.ca/404">Resume</a><a class="btn btn-primary" role="button" href="https://linktr.ee/anch2797">Social Media</a><a class="btn btn-primary" role="button" href="https://andremoura.ca/404">About Me</a></p>
-        </div>
+
+    <!-- Page content -->
+    <div class="page-content">
+        <section class="hero-section">
+            <div class="glass-panel hero-card">
+                <h1>Welcome.</h1>
+                <p>My name is Andre Moura and this is my site. This site will evolve as time goes on but feel free to look around. Click the links at the top or buttons below to explore and connect with me on social media.</p>
+                <div>
+                    <a class="btn-aero" href="resume.html">Resume</a>
+                    <a class="btn-aero" href="social.html">Social Media</a>
+                    <a class="btn-aero" href="about.html">About Me</a>
+                </div>
+            </div>
+        </section>
     </div>
+
+    <footer>
+        &copy; <script>document.write(new Date().getFullYear())</script> Andre Moura
+    </footer>
+
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
 </body>
