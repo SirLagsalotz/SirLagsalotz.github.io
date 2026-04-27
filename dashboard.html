@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ANDRE">
+<meta name="theme-color" content="#080808">
+<title>ANDRE</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080808; --s1:#111; --s2:#181818; --s3:#202020;
+  --border:#272727; --border2:#333;
+  --text:#ebebeb; --muted:#565656; --dim:#333;
+  --green:#b8f050; --blue:#50c8f0; --pink:#f050a0;
+  --orange:#f0a050; --gold:#f0c832; --purple:#a878ff;
+  --teal:#32d9a0; --red:#f05050;
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --tab-h:62px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;display:flex;flex-direction:column}
+
+/* ══ SCROLL CONTAINER ══ */
+.pages{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;padding-bottom:calc(var(--tab-h) + var(--safe-b) + 16px)}
+.page{display:none;padding:calc(var(--safe-t) + 18px) 15px 8px;animation:fadeUp .25s ease both}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ TAB BAR ══ */
+.tabbar{position:fixed;bottom:0;left:0;right:0;height:calc(var(--tab-h) + var(--safe-b));padding-bottom:var(--safe-b);background:rgba(8,8,8,.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-around;padding-top:10px;z-index:200}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;opacity:.4;transition:opacity .2s;min-width:44px;padding:2px 6px}
+.tab.active{opacity:1}
+.tab-icon{font-size:20px;line-height:1}
+.tab-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.5px;text-transform:uppercase}
+.tab.active .tab-label{color:var(--green)}
+
+/* ══ SHARED COMPONENTS ══ */
+.pg-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+.pg-title{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px;color:var(--green);line-height:1}
+.pg-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+
+.card{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px}
+.card-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.card-icon{font-size:16px;flex-shrink:0}
+.card-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;flex:1}
+.card-tag{font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(184,240,80,.1);color:var(--green)}
+.card-tag.blue{background:rgba(80,200,240,.1);color:var(--blue)}
+.card-tag.orange{background:rgba(240,160,80,.1);color:var(--orange)}
+.card-tag.gold{background:rgba(240,200,50,.1);color:var(--gold)}
+.card-tag.purple{background:rgba(168,120,255,.1);color:var(--purple)}
+.card-tag.red{background:rgba(240,80,80,.1);color:var(--red)}
+.card-body{padding:12px 14px}
+
+.banner{border-radius:12px;padding:11px 14px;margin-bottom:12px;font-size:13px;line-height:1.5}
+.banner-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;margin-bottom:5px}
+.banner.green{background:rgba(184,240,80,.06);border:1px solid rgba(184,240,80,.2);color:var(--text)}.banner.green .banner-title{color:var(--green)}
+.banner.orange{background:rgba(240,160,80,.06);border:1px solid rgba(240,160,80,.2);color:var(--text)}.banner.orange .banner-title{color:var(--orange)}
+.banner.blue{background:rgba(80,200,240,.06);border:1px solid rgba(80,200,240,.2);color:var(--text)}.banner.blue .banner-title{color:var(--blue)}
+.banner.gold{background:rgba(240,200,50,.06);border:1px solid rgba(240,200,50,.2);color:var(--text)}.banner.gold .banner-title{color:var(--gold)}
+
+/* check items */
+.check-item{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.check-item:last-child{border-bottom:none}
+.check-box{width:20px;height:20px;border:1.5px solid var(--border2);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s;margin-top:1px}
+.check-item.done .check-box{background:var(--green);border-color:var(--green);color:#080808}
+.check-item.done .ci-main{opacity:.35;text-decoration:line-through;text-decoration-color:var(--muted)}
+.ci-main{font-size:14px;font-weight:500;flex:1}
+.ci-sub{font-size:11px;color:var(--muted);margin-top:2px;font-weight:300}
+
+/* section divider */
+.sec-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);margin:16px 0 8px;text-transform:uppercase}
+
+/* toggle buttons */
+.tog-row{display:flex;gap:8px;margin-bottom:14px}
+.tog-btn{flex:1;padding:12px 8px;border-radius:11px;border:1.5px solid var(--border);background:var(--s1);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:5px}
+.tog-btn .ti{font-size:20px}
+.tog-btn.on-green{border-color:var(--green);background:rgba(184,240,80,.07);color:var(--green)}
+.tog-btn.on-blue{border-color:var(--blue);background:rgba(80,200,240,.07);color:var(--blue)}
+.tog-btn.on-orange{border-color:var(--orange);background:rgba(240,160,80,.07);color:var(--orange)}
+.tog-btn.on-gold{border-color:var(--gold);background:rgba(240,200,50,.07);color:var(--gold)}
+.tog-btn.on-purple{border-color:var(--purple);background:rgba(168,120,255,.07);color:var(--purple)}
+
+/* step list */
+.step-list{display:flex;flex-direction:column;gap:9px}
+.step-row{display:flex;gap:11px;align-items:flex-start;cursor:pointer;user-select:none}
+.step-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--green);background:rgba(184,240,80,.1);border-radius:5px;padding:3px 6px;min-width:26px;text-align:center;flex-shrink:0;margin-top:2px}
+.step-num.blue{color:var(--blue);background:rgba(80,200,240,.1)}
+.step-num.orange{color:var(--orange);background:rgba(240,160,80,.1)}
+.step-content{font-size:13.5px;line-height:1.5;flex:1}
+.step-content strong{font-weight:600}
+.step-content .stip{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.step-row.sdone .step-content{opacity:.35;text-decoration:line-through;text-decoration-color:var(--muted)}
+
+/* big stat */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat-box{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;margin-bottom:2px}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.5px}
+
+/* progress ring */
+.ring-wrap{display:flex;align-items:center;justify-content:center;position:relative}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-center{position:absolute;text-align:center}
+.ring-pct{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--green);line-height:1}
+.ring-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)}
+
+/* pill btn */
+.pill-btn{padding:10px 16px;border-radius:10px;border:1.5px solid var(--green);background:rgba(184,240,80,.1);color:var(--green);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;width:100%;margin-top:8px}
+.pill-btn:hover{background:rgba(184,240,80,.18)}
+.pill-btn.orange{border-color:var(--orange);background:rgba(240,160,80,.1);color:var(--orange)}
+.pill-btn.blue{border-color:var(--blue);background:rgba(80,200,240,.1);color:var(--blue)}
+.pill-btn.ghost{border-color:var(--border);background:transparent;color:var(--muted)}
+
+/* expandable */
+.expand-btn{width:100%;background:none;border:none;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;padding:8px 0 2px;text-align:left;display:flex;align-items:center;gap:6px}
+.expand-content{display:none;padding-top:8px}
+.expand-content.open{display:block}
+
+/* dot tracker */
+.dot-row{display:flex;gap:5px;margin:10px 0}
+.dot{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-family:'DM Mono',monospace;color:var(--muted);cursor:pointer;transition:all .18s;user-select:none}
+.dot:hover{border-color:var(--orange);color:var(--orange)}
+.dot.washed{background:rgba(240,160,80,.2);border-color:var(--orange);color:var(--orange)}
+.dot.today{border-color:var(--green);color:var(--green)}
+.dot.washed.today{background:rgba(240,160,80,.25);border-color:var(--orange);color:var(--orange)}
+
+/* supp item */
+.supp-item{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;transition:all .15s}
+.supp-item.done{border-color:rgba(61,217,179,.3);background:rgba(61,217,179,.04)}
+.supp-top{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.supp-check{width:22px;height:22px;border:1.5px solid var(--border2);border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+.supp-item.done .supp-check{background:var(--teal);border-color:var(--teal);color:#080808}
+.supp-item.done .supp-name{opacity:.4;text-decoration:line-through;text-decoration-color:var(--muted)}
+.supp-name{font-size:14px;font-weight:500;flex:1}
+.supp-meta{display:flex;align-items:center;gap:6px;margin-top:3px}
+.supp-dose{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)}
+.supp-timing{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;letter-spacing:.5px}
+.supp-info{display:none;padding:8px 0 2px 32px;font-size:12px;color:var(--muted);line-height:1.6;border-top:1px solid var(--border);margin-top:10px;padding-top:10px}
+.supp-info.open{display:block}
+.supp-expand{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:0 4px;flex-shrink:0;line-height:1;opacity:.5}
+.supp-expand:hover{opacity:1}
+.supp-group-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);margin:14px 0 8px;text-transform:uppercase}
+
+/* clarus badge */
+.clarus-card{background:linear-gradient(135deg,rgba(168,120,255,.08),rgba(240,80,80,.05));border:1px solid rgba(168,120,255,.25);border-radius:14px;padding:14px;margin-bottom:12px}
+.clarus-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:var(--purple);margin-bottom:10px}
+.clarus-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.clarus-dot{width:10px;height:10px;border-radius:50%;background:var(--purple);flex-shrink:0}
+.clarus-text{font-size:13px;flex:1}
+.clarus-val{font-family:'DM Mono',monospace;font-size:12px;color:var(--purple)}
+.clarus-progress{height:4px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden}
+.clarus-progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:2px;transition:width .5s ease}
+
+/* input fields */
+.field-row{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.field-input{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;width:100%}
+.field-input:focus{border-color:var(--green)}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* mood selector */
+.mood-row{display:flex;gap:8px;justify-content:space-between}
+.mood-btn{flex:1;padding:10px 4px;border-radius:10px;border:1.5px solid var(--border);background:var(--s2);cursor:pointer;text-align:center;font-size:18px;transition:all .15s}
+.mood-btn.sel{border-color:var(--gold);background:rgba(240,200,50,.08)}
+
+/* history list */
+.hist-item{padding:9px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px}
+.hist-item:last-child{border-bottom:none}
+.hist-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);flex-shrink:0;margin-top:2px}
+.hist-text{font-size:13px;flex:1;line-height:1.5}
+
+/* sync status */
+.sync-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--s1);border:1px solid var(--border);border-radius:10px;margin-bottom:14px;font-size:12px;color:var(--muted)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.sync-dot.synced{background:var(--green)}
+.sync-dot.syncing{background:var(--gold);animation:pulse .8s ease infinite alternate}
+.sync-dot.error{background:var(--red)}
+@keyframes pulse{from{opacity:.4}to{opacity:1}}
+.sync-label{flex:1}
+.sync-btn{font-family:'DM Mono',monospace;font-size:10px;color:var(--blue);cursor:pointer;letter-spacing:.5px}
+
+/* ══ PIN LOCK ══ */
+#pin-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;gap:0}
+#pin-screen.hidden{display:none}
+.pin-title{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:3px;color:var(--green);margin-bottom:4px}
+.pin-sub{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:40px}
+.pin-dots{display:flex;gap:16px;margin-bottom:40px}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border2);transition:all .15s}
+.pin-dot.filled{background:var(--green);border-color:var(--green)}
+.pin-dot.error{background:var(--red);border-color:var(--red)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:280px}
+.pin-key{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px;font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--text);cursor:pointer;transition:all .15s;text-align:center;user-select:none;-webkit-tap-highlight-color:transparent}
+.pin-key:active{background:var(--s2);transform:scale(.95)}
+.pin-key.del{font-size:20px;color:var(--muted)}
+.pin-key.empty{background:transparent;border-color:transparent;cursor:default}
+.pin-error{font-family:'DM Mono',monospace;font-size:11px;color:var(--red);letter-spacing:1px;margin-top:16px;opacity:0;transition:opacity .2s}
+.pin-error.show{opacity:1}
+
+/* ══ COLD SORE TRACKER ══ */
+.cs-card{background:linear-gradient(135deg,rgba(240,80,80,.08),rgba(240,160,80,.05));border:1px solid rgba(240,80,80,.3);border-radius:14px;padding:14px;margin-bottom:12px}
+.cs-card.inactive{background:var(--s1);border-color:var(--border)}
+.cs-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.cs-title.inactive{color:var(--muted)}
+.cs-day-badge{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--red);line-height:1}
+.cs-day-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:2px}
+.cs-checklist{display:flex;flex-direction:column;gap:6px;margin:12px 0}
+.cs-check{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;padding:8px 10px;background:rgba(240,80,80,.06);border-radius:9px;border:1px solid rgba(240,80,80,.15)}
+.cs-check.done{background:rgba(184,240,80,.05);border-color:rgba(184,240,80,.2)}
+.cs-check-box{width:18px;height:18px;border:1.5px solid rgba(240,80,80,.4);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
+.cs-check.done .cs-check-box{background:var(--green);border-color:var(--green);color:#080808}
+.cs-check-label{font-size:13px;flex:1}
+.cs-check-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.cs-check.done .cs-check-label{opacity:.4;text-decoration:line-through;text-decoration-color:var(--muted)}
+.cs-timeline{display:flex;gap:4px;margin:10px 0}
+.cs-tday{flex:1;height:6px;border-radius:3px;background:var(--border);transition:background .3s}
+.cs-tday.past{background:var(--red)}
+.cs-tday.today-dot{background:var(--orange)}
+.cs-lysine-note{font-family:'DM Mono',monospace;font-size:11px;color:var(--orange);background:rgba(240,160,80,.1);border:1px solid rgba(240,160,80,.2);border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     GOOGLE DRIVE AUTH MODAL
+══════════════════════════════════════════ -->
+<div id="auth-modal" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:998;display:none;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:24px;max-width:340px;width:100%;text-align:center">
+    <div style="font-size:36px;margin-bottom:12px">☁️</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--green);margin-bottom:8px">SYNC TO GOOGLE DRIVE</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px">Your data will be saved to a file in your Google Drive. Works across all your devices.</div>
+    <button onclick="initGoogleDrive()" style="width:100%;padding:13px;border-radius:11px;border:none;background:var(--green);color:#080808;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px">Connect Google Drive</button>
+    <button onclick="dismissAuth()" style="width:100%;padding:11px;border-radius:11px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer">Use locally for now</button>
+  </div>
+</div>
+
+
+<!-- ══ PIN LOCK SCREEN ══ -->
+<div id="pin-screen" class="hidden">
+  <div class="pin-title">ANDRE</div>
+  <div class="pin-sub">ENTER PIN TO CONTINUE</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="pd-0"></div>
+    <div class="pin-dot" id="pd-1"></div>
+    <div class="pin-dot" id="pd-2"></div>
+    <div class="pin-dot" id="pd-3"></div>
+  </div>
+  <div class="pin-pad">
+    <div class="pin-key" onclick="pinPress('1')">1</div>
+    <div class="pin-key" onclick="pinPress('2')">2</div>
+    <div class="pin-key" onclick="pinPress('3')">3</div>
+    <div class="pin-key" onclick="pinPress('4')">4</div>
+    <div class="pin-key" onclick="pinPress('5')">5</div>
+    <div class="pin-key" onclick="pinPress('6')">6</div>
+    <div class="pin-key" onclick="pinPress('7')">7</div>
+    <div class="pin-key" onclick="pinPress('8')">8</div>
+    <div class="pin-key" onclick="pinPress('9')">9</div>
+    <div class="pin-key empty"></div>
+    <div class="pin-key" onclick="pinPress('0')">0</div>
+    <div class="pin-key del" onclick="pinDel()">⌫</div>
+  </div>
+  <div class="pin-error" id="pin-error">INCORRECT PIN</div>
+</div>
+
+<!-- ══ PAGES ══ -->
+<div class="pages">
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  HOME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="page active" id="page-home">
+  <div class="pg-header">
+    <div>
+      <div class="pg-title" id="home-greeting">GOOD MORNING</div>
+      <div class="pg-sub" id="home-date">THURSDAY · APRIL 16</div>
+      <div style="font-family:'DM Mono',monospace;font-size:22px;color:var(--text);margin-top:4px;letter-spacing:2px" id="home-clock">--:--</div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.5px" id="home-midnight">--:--:-- left today</div>
+    </div>
+    <div id="home-ring" style="width:64px;height:64px"></div>
+  </div>
+
+  <div class="sync-bar" id="sync-bar">
+    <div class="sync-dot" id="sync-dot"></div>
+    <div class="sync-label" id="sync-label">Not connected</div>
+    <div class="sync-btn" onclick="showAuthModal()">CONNECT</div>
+  </div>
+
+  <!-- today summary cards -->
+  <div class="stat-grid">
+    <div class="stat-box">
+      <div class="stat-val" id="home-streak" style="color:var(--green)">0</div>
+      <div class="stat-lbl">DAY STREAK</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="home-done" style="color:var(--blue)">0/0</div>
+      <div class="stat-lbl">TODAY DONE</div>
+    </div>
+  </div>
+
+  <!-- quick checklist -->
+  <div class="sec-label">TODAY'S CHECKLIST</div>
+  <div class="card">
+    <div class="card-body" id="home-checklist" style="padding:4px 14px"></div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  HEALTH — SUPPLEMENTS + MEDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="page" id="page-health">
+  <!-- Cold sore active card — only visible during outbreak -->
+  <div id="cold-sore-card-top" style="display:none"></div>
+
+  <div class="pg-header">
+    <div>
+      <div class="pg-title" style="color:var(--teal)">HEALTH</div>
+      <div class="pg-sub">SUPPLEMENTS · MEDICATIONS</div>
+    </div>
+    <div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:right" id="supp-count">0 / 0 taken</div>
+    </div>
+  </div>
+
+  <!-- Clarus tracker -->
+  <div class="clarus-card" id="clarus-card">
+    <div class="clarus-title">💊 CLARUS (ISOTRETINOIN)</div>
+    <div class="clarus-row">
+      <div class="clarus-dot"></div>
+      <div class="clarus-text">Current dose</div>
+      <div class="clarus-val" id="clarus-dose-display">10mg</div>
+    </div>
+    <div class="clarus-row">
+      <div class="clarus-dot" style="background:var(--orange)"></div>
+      <div class="clarus-text">Next increase</div>
+      <div class="clarus-val" style="color:var(--orange)" id="clarus-next">May 5 → 20mg</div>
+    </div>
+    <div class="clarus-row">
+      <div class="clarus-dot" style="background:var(--pink)"></div>
+      <div class="clarus-text">Days until increase</div>
+      <div class="clarus-val" style="color:var(--pink)" id="clarus-days">—</div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:8px;margin-bottom:4px">COURSE PROGRESS</div>
+    <div class="clarus-progress"><div class="clarus-progress-fill" id="clarus-prog" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px"><span>START</span><span id="clarus-prog-pct">0%</span><span>~12 MO</span></div>
+    <!-- take today -->
+    <div style="margin-top:12px;display:flex;align-items:center;gap:10px">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1">
+        <div class="supp-check" id="clarus-check" onclick="toggleClarus()">—</div>
+        <span style="font-size:13px;color:var(--text)" id="clarus-taken-label">Mark Clarus taken today</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Omnaris -->
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-header">
+      <span class="card-icon">💨</span>
+      <span class="card-title" style="color:var(--blue)">OMNARIS NASAL SPRAY</span>
+      <span class="card-tag blue">DAILY</span>
+    </div>
+    <div class="card-body">
+      <label class="check-item" id="omnaris-item" onclick="toggleCheck('omnaris')">
+        <div class="check-box">—</div>
+        <div><div class="ci-main">Omnaris (ciclesonide)</div><div class="ci-sub">1–2 sprays each nostril · morning</div></div>
+      </label>
+    </div>
+  </div>
+
+
+  <!-- Supplements -->
+  <div class="sec-label">SUPPLEMENTS</div>
+  <div id="supp-list"></div>
+  <button class="pill-btn" onclick="resetSupps()">Reset Today's Supplements</button>
+
+  <!-- Cold Sore Tracker -->
+  <div class="sec-label" id="cs-section-label" style="display:none">COLD SORE</div>
+  <div id="cold-sore-card"></div>
+  <button class="pill-btn" style="border-color:var(--red);background:rgba(240,80,80,.08);color:var(--red);margin-top:4px;font-size:12px" onclick="csStartOutbreak()" id="cs-trigger-btn">🦠 Log Cold Sore Outbreak</button>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BODY — GYM + NUTRITION + METRICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="page" id="page-body">
+  <div class="pg-header">
+    <div>
+      <div class="pg-title" style="color:var(--orange)">BODY</div>
+      <div class="pg-sub">GYM · NUTRITION · METRICS</div>
+    </div>
+  </div>
+
+  <div class="sec-label">GYM</div>
+  <div class="card">
+    <div class="card-body" id="gym-checks" style="padding:4px 14px"></div>
+  </div>
+
+  <div class="sec-label">NUTRITION</div>
+  <div class="card">
+    <div class="card-body" id="diet-checks" style="padding:4px 14px"></div>
+  </div>
+
+  <div class="sec-label">BODY METRICS</div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📏</span>
+      <span class="card-title" style="color:var(--orange)">LOG METRICS</span>
+      <span class="card-tag orange">WEEKLY</span>
+    </div>
+    <div class="card-body">
+      <div class="field-grid">
+        <div class="field-row"><div class="field-label">WEIGHT (lbs)</div><input class="field-input" id="metric-weight" type="number" placeholder="—"></div>
+        <div class="field-row"><div class="field-label">BODY FAT %</div><input class="field-input" id="metric-bf" type="number" placeholder="—"></div>
+        <div class="field-row"><div class="field-label">CHEST (in)</div><input class="field-input" id="metric-chest" type="number" placeholder="—"></div>
+        <div class="field-row"><div class="field-label">WAIST (in)</div><input class="field-input" id="metric-waist" type="number" placeholder="—"></div>
+        <div class="field-row"><div class="field-label">ARMS (in)</div><input class="field-input" id="metric-arms" type="number" placeholder="—"></div>
+        <div class="field-row"><div class="field-label">LEGS (in)</div><input class="field-input" id="metric-legs" type="number" placeholder="—"></div>
+      </div>
+      <button class="pill-btn orange" onclick="saveMetrics()">Save Metrics</button>
+    </div>
+  </div>
+
+  <div class="sec-label">RECENT METRICS</div>
+  <div class="card">
+    <div class="card-body" id="metrics-history" style="padding:4px 14px">
+      <div style="font-size:13px;color:var(--muted);padding:10px 0">No metrics logged yet</div>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MIND — MENTAL + BREATHWORK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="page" id="page-mind">
+  <div class="pg-header">
+    <div>
+      <div class="pg-title" style="color:var(--purple)">MIND</div>
+      <div class="pg-sub">MENTAL · BREATHWORK · MOOD</div>
+    </div>
+  </div>
+
+  <div class="sec-label">MOOD CHECK-IN</div>
+  <div class="card">
+    <div class="card-body">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">How are you feeling today?</div>
+      <div class="mood-row" id="mood-row">
+        <div class="mood-btn" data-mood="1" onclick="setMood(1)">😞</div>
+        <div class="mood-btn" data-mood="2" onclick="setMood(2)">😕</div>
+        <div class="mood-btn" data-mood="3" onclick="setMood(3)">😐</div>
+        <div class="mood-btn" data-mood="4" onclick="setMood(4)">🙂</div>
+        <div class="mood-btn" data-mood="5" onclick="setMood(5)">😄</div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px" id="mood-note"></div>
+    </div>
+  </div>
+
+  <div class="sec-label">MENTAL HABITS</div>
+  <div class="card">
+    <div class="card-body" id="mental-checks" style="padding:4px 14px"></div>
+  </div>
+
+  <div class="sec-label">BREATHWORK</div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🌬️</span>
+      <span class="card-title" style="color:var(--purple)">GUIDED TIMER</span>
+    </div>
+    <div class="card-body">
+      <div class="tog-row" id="bw-pattern-row">
+        <button class="tog-btn on-purple" id="bwp-box" onclick="setBWPattern('box')" style="border-color:var(--purple);background:rgba(168,120,255,.07);color:var(--purple)">📦 Box</button>
+        <button class="tog-btn" id="bwp-478" onclick="setBWPattern('478')">⚡ 4-7-8</button>
+        <button class="tog-btn" id="bwp-wim" onclick="setBWPattern('wim')">🧊 Wim Hof</button>
+      </div>
+      <div style="text-align:center;padding:20px 0">
+        <div id="bw-orb" style="width:90px;height:90px;border-radius:50%;border:2px solid var(--purple);display:inline-flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--purple);transition:all .5s;margin-bottom:10px">—</div>
+        <div id="bw-phase" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px">PRESS START</div>
+      </div>
+      <button class="pill-btn" id="bw-start-btn" onclick="toggleBreath()" style="border-color:var(--purple);background:rgba(168,120,255,.1);color:var(--purple)">Start</button>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  HAIR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="page" id="page-hair">
+  <div class="pg-header">
+    <div>
+      <div class="pg-title" style="color:var(--gold)">HAIR</div>
+      <div class="pg-sub">3A/3B · HIGH POROSITY</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)" id="hair-streak-lbl">0 DAY STREAK</div>
+    </div>
+  </div>
+
+  <!-- wash tracker -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🚿</span>
+      <span class="card-title" style="color:var(--orange)">WASH TRACKER</span>
+      <span class="card-tag orange" id="hair-wash-status">CHECKING…</span>
+    </div>
+    <div class="card-body">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px">TAP ANY DAY TO TOGGLE</div>
+      <div class="dot-row" id="hair-dots"></div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button class="pill-btn orange" style="margin-top:0" onclick="hairLogWash()">🚿 Log Wash Today</button>
+        <button class="pill-btn ghost" style="margin-top:0;flex:0 0 auto;width:auto;padding:10px 14px" onclick="hairUndoWash()">Undo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- routine selector -->
+  <div class="sec-label">TIME OF DAY</div>
+  <div class="tog-row">
+    <button class="tog-btn" id="hair-btn-morning" onclick="hairSetTime('morning')"><span class="ti">🌅</span>Morning</button>
+    <button class="tog-btn" id="hair-btn-night" onclick="hairSetTime('night')"><span class="ti">🌙</span>Night</button>
+  </div>
+
+  <div id="hair-shower-section" style="display:none">
+    <div class="sec-label">SHOWERING?</div>
+    <div class="tog-row">
+      <button class="tog-btn" id="hair-btn-shower" onclick="hairSetShower(true)"><span class="ti">🚿</span>Shower</button>
+      <button class="tog-btn" id="hair-btn-refresh" onclick="hairSetShower(false)"><span class="ti">💧</span>Refresher</button>
+    </div>
+  </div>
+
+  <div id="hair-night-shower-section" style="display:none">
+    <div class="sec-label">SHOWERING?</div>
+    <div class="tog-row">
+      <button class="tog-btn" id="hair-btn-night-shower" onclick="hairSetNightShower(true)"><span class="ti">🚿</span>Shower</button>
+      <button class="tog-btn" id="hair-btn-night-refresh" onclick="hairSetNightShower(false)"><span class="ti">💧</span>Refresher</button>
+    </div>
+  </div>
+
+  <div class="sec-label">GOING OUT?</div>
+  <div class="tog-row">
+    <button class="tog-btn" id="hair-btn-out" onclick="hairSetOut(true)"><span class="ti">🚶</span>Going Out</button>
+    <button class="tog-btn" id="hair-btn-home" onclick="hairSetOut(false)"><span class="ti">🏠</span>Staying Home</button>
+  </div>
+
+  <div id="hair-routine-output"></div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MORE — PE + FACE + SETTINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="page" id="page-more">
+  <div class="pg-header">
+    <div>
+      <div class="pg-title" style="color:var(--pink)">MORE</div>
+      <div class="pg-sub">PE · FACE · SETTINGS</div>
+    </div>
+  </div>
+
+  <div class="sec-label">PE & KEGELS</div>
+  <div class="card">
+    <div class="card-body" id="pe-checks" style="padding:4px 14px"></div>
+  </div>
+
+  <div class="sec-label">FACIAL EXERCISES</div>
+  <div class="card">
+    <div class="card-body" id="face-checks" style="padding:4px 14px"></div>
+  </div>
+
+  <div class="sec-label">SETTINGS</div>
+  <div class="card">
+    <div class="card-body">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Google Drive sync status</div>
+      <div class="sync-bar" style="margin-bottom:12px">
+        <div class="sync-dot" id="sync-dot2"></div>
+        <div class="sync-label" id="sync-label2">Not connected</div>
+      </div>
+      <button class="pill-btn blue" onclick="showAuthModal()">Connect / Reconnect Google Drive</button>
+      <button class="pill-btn ghost" style="margin-top:8px" onclick="exportData()">Export Data as JSON</button>
+      <button class="pill-btn ghost" style="margin-top:8px;border-color:var(--red);color:var(--red)" onclick="if(confirm('Reset ALL data? This cannot be undone.'))resetAll()">Reset All Data</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  LIFE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="page" id="page-life">
+  <div class="pg-header">
+    <div>
+      <div class="pg-title" style="color:var(--pink)">LIFE</div>
+      <div class="pg-sub">MEMENTO MORI · TIME IS TICKING</div>
+    </div>
+  </div>
+
+  <!-- Big life stat -->
+  <div style="background:linear-gradient(135deg,rgba(240,80,160,.06),rgba(168,120,255,.06));border:1px solid rgba(240,80,160,.2);border-radius:16px;padding:20px;margin-bottom:12px;text-align:center">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">WEEKS LIVED</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:72px;color:var(--pink);line-height:1" id="life-weeks-lived">—</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px">OF <span id="life-weeks-total" style="color:var(--text)">—</span> WEEKS</div>
+    <div style="margin-top:14px;height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+      <div id="life-bar" style="height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:3px;transition:width 1s ease;width:0%"></div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--pink);margin-top:6px" id="life-pct">—% lived</div>
+  </div>
+
+  <!-- Stat grid -->
+  <div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
+    <div class="stat-box">
+      <div class="stat-val" id="life-age" style="color:var(--pink)">—</div>
+      <div class="stat-lbl">AGE</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="life-days-lived" style="color:var(--purple)">—</div>
+      <div class="stat-lbl">DAYS LIVED</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="life-bday-countdown" style="color:var(--gold)">—</div>
+      <div class="stat-lbl">DAYS TO BDAY</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="life-year-left" style="color:var(--teal)">—</div>
+      <div class="stat-lbl">DAYS LEFT IN YEAR</div>
+    </div>
+  </div>
+
+  <!-- Weeks remaining -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">⏳</span>
+      <span class="card-title" style="color:var(--purple)">WEEKS REMAINING</span>
+    </div>
+    <div class="card-body">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:10px">BASED ON <span id="life-expectancy-label" style="color:var(--text)">85 YEAR</span> LIFE EXPECTANCY</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--purple);line-height:1;margin-bottom:4px" id="life-weeks-left">—</div>
+      <div style="font-size:12px;color:var(--muted)">weeks left — make them count</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">Life expectancy:</div>
+        <input id="life-exp-input" type="number" value="85" min="60" max="120" style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;width:70px;outline:none" oninput="renderLifePage()">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">years</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Year progress -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📅</span>
+      <span class="card-title" style="color:var(--teal)">THIS YEAR</span>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">Year progress</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--teal)" id="life-year-pct">—%</div>
+      </div>
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:14px">
+        <div id="life-year-bar" style="height:100%;background:var(--teal);border-radius:3px;width:0%;transition:width 1s ease"></div>
+      </div>
+      <div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-bottom:0">
+        <div class="stat-box" style="margin-bottom:0">
+          <div class="stat-val" id="life-year-done" style="color:var(--teal);font-size:28px">—</div>
+          <div class="stat-lbl">DAYS DONE</div>
+        </div>
+        <div class="stat-box" style="margin-bottom:0">
+          <div class="stat-val" id="life-year-left2" style="color:var(--muted);font-size:28px">—</div>
+          <div class="stat-lbl">DAYS LEFT</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fun facts -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🔢</span>
+      <span class="card-title" style="color:var(--gold)">YOU IN NUMBERS</span>
+    </div>
+    <div class="card-body" id="life-numbers" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+
+</div><!-- /pages -->
+
+<!-- ══ TAB BAR ══ -->
+<div class="tabbar">
+  <div class="tab active" id="tab-home" onclick="goTab('home')"><div class="tab-icon">🏠</div><div class="tab-label">Home</div></div>
+  <div class="tab" id="tab-health" onclick="goTab('health')"><div class="tab-icon">💊</div><div class="tab-label">Health</div></div>
+  <div class="tab" id="tab-body" onclick="goTab('body')"><div class="tab-icon">💪</div><div class="tab-label">Body</div></div>
+  <div class="tab" id="tab-mind" onclick="goTab('mind')"><div class="tab-icon">🧠</div><div class="tab-label">Mind</div></div>
+  <div class="tab" id="tab-hair" onclick="goTab('hair')"><div class="tab-icon">💆</div><div class="tab-label">Hair</div></div>
+  <div class="tab" id="tab-life" onclick="goTab('life')"><div class="tab-icon">⏳</div><div class="tab-label">Life</div></div>
+  <div class="tab" id="tab-more" onclick="goTab('more')"><div class="tab-icon">⚡</div><div class="tab-label">More</div></div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+const VER = 'andre_v1';
+let S = {
+  // daily resets (keyed by date)
+  daily: {},
+  // persistent
+  metrics: [],
+  mood: {},
+  hair: { washes: [] },
+  coldSore: { active: false, startDate: null, history: [] },
+  // google drive
+  drive: { connected: false, fileId: null, token: null }
+};
+
+function today() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function todayData() {
+  const t = today();
+  if (!S.daily[t]) S.daily[t] = { checks: {}, supps: {}, clarus: false, omnaris: false };
+  return S.daily[t];
+}
+
+// ═══════════════════════════════════
+// SUPPLEMENTS DATA
+// ═══════════════════════════════════
+const SUPPS = [
+  // MORNING
+  { id:'vd3',        name:'Vitamin D3',             dose:'2,000–4,000 IU', timing:'MORNING', timingColor:'rgba(240,200,50,.15)', timingText:'var(--gold)',   info:'Immune, mood, testosterone, bone. Take with food/fat for absorption. Most Canadians are deficient.' },
+  { id:'omega3',     name:'Omega-3',                dose:'2,000–3,000mg',  timing:'MORNING', timingColor:'rgba(240,200,50,.15)', timingText:'var(--gold)',   info:'Inflammation, cardiovascular, skin barrier — very relevant on Clarus. Helps offset isotretinoin triglyceride spike.' },
+  { id:'hla',        name:'Hyaluronic Acid',        dose:'90–100mg',        timing:'MORNING', timingColor:'rgba(240,200,50,.15)', timingText:'var(--gold)',   info:'Joint lubrication, skin hydration. Very relevant on Clarus dryness. Take with food.' },
+  { id:'lysine',     name:'L-Lysine',               dose:'500mg ×2',        timing:'MORNING', timingColor:'rgba(240,200,50,.15)', timingText:'var(--gold)',   info:'Collagen synthesis cofactor — synergistic with your collagen supplement. Also antiviral and supports calcium absorption.' },
+  { id:'spirulina',  name:'Spirulina',              dose:'6g (1 scoop)',    timing:'MORNING', timingColor:'rgba(240,200,50,.15)', timingText:'var(--gold)',   info:'Dense micronutrient profile, antioxidant, anti-inflammatory. Mild liver support — useful alongside Clarus.' },
+  // PRE-WORKOUT
+  { id:'citrulline', name:'Citrulline Malate',      dose:'10g (2×5g)',      timing:'PRE-WO',  timingColor:'rgba(240,160,80,.15)', timingText:'var(--orange)', info:'Pump, blood flow, reduces fatigue. Take 30–45 min before training. Pairs well with Creatine.' },
+  // POST-WORKOUT
+  { id:'creatine',   name:'Creatine Monohydrate',  dose:'5g',              timing:'POST-WO', timingColor:'rgba(80,200,240,.15)', timingText:'var(--blue)',   info:'Muscle power output, recovery, cognitive support. Mix into post-workout shake.' },
+  { id:'glutamine',  name:'L-Glutamine',            dose:'5g',              timing:'POST-WO', timingColor:'rgba(80,200,240,.15)', timingText:'var(--blue)',   info:'Gut lining integrity, immune support, recovery. Best post-workout or before bed.' },
+  { id:'collagen',   name:'Hydrolyzed Collagen',   dose:'5g',              timing:'POST-WO', timingColor:'rgba(80,200,240,.15)', timingText:'var(--blue)',   info:'Joint/connective tissue, skin support. Synergistic with L-Lysine. Collagen synthesis peaks post-exercise.' },
+  // MORNING (continued)
+  { id:'vitc',       name:'Vitamin C',              dose:'1,000mg',         timing:'MORNING', timingColor:'rgba(240,200,50,.15)', timingText:'var(--gold)',   info:'Immune support, collagen synthesis cofactor — synergistic with your collagen + lysine stack. Very relevant on Clarus. Take with food.' },
+  // NIGHT
+  { id:'zma',        name:'ZMA',                   dose:'3 caps',          timing:'NIGHT',   timingColor:'rgba(168,120,255,.15)', timingText:'var(--purple)', info:'Zinc 30mg / Magnesium 450mg / B6. Take on empty stomach before bed. Zinc at 30mg is near upper limit — monitor.' },
+  { id:'ashwa',      name:'Ashwagandha KSM-66',    dose:'600mg',           timing:'NIGHT',   timingColor:'rgba(168,120,255,.15)', timingText:'var(--purple)', info:'Adaptogen — cortisol regulation, stress, sleep quality. KSM-66 is the best-studied form. Take before bed on an empty stomach.' },
+];
+
+// ═══════════════════════════════════
+// HABITS DATA
+// ═══════════════════════════════════
+const HABITS = {
+  gym:    [ { id:'gym-train',   label:'Training session', sub:'Log in MacroFactor after' },
+            { id:'gym-steps',   label:'Hit step goal',    sub:'10,000 steps' },
+            { id:'gym-stretch', label:'Stretch / mobility', sub:'Post-workout or before bed' } ],
+  diet:   [ { id:'diet-protein', label:'Hit protein target',  sub:'MacroFactor goal' },
+            { id:'diet-water',   label:'Hydration',           sub:'3L minimum — critical on Clarus' },
+            { id:'diet-food',    label:'Whole foods focus',   sub:'Avoid junk — supports Clarus' } ],
+  mental: [ { id:'mind-journal', label:'Journal / reflect',   sub:'Even 5 min counts' },
+            { id:'mind-read',    label:'Read',                sub:'10+ pages' },
+            { id:'mind-screen',  label:'Screen-free wind down',sub:'30 min before bed' },
+            { id:'mind-breath',  label:'Breathwork session',  sub:'Use the timer in Mind tab' } ],
+  pe:     [ { id:'pe-kegel',    label:'Kegel sets',          sub:'3×15 reps, hold 5s each' },
+            { id:'pe-session',  label:'PE session',          sub:'Log duration and technique' },
+            { id:'pe-recovery', label:'Recovery day rest',   sub:'Skip session if sore' } ],
+  face:   [ { id:'face-mew',    label:'Mewing (tongue posture)', sub:'Maintain throughout day' },
+            { id:'face-jaw',    label:'Jawline / resistance chew', sub:'2×20 reps' },
+            { id:'face-neck',   label:'Neck / platysma',    sub:'3×10 chin tucks' },
+            { id:'face-cheek',  label:'Cheek / zygomaticus', sub:'3×10 lifts' } ],
+};
+
+// ═══════════════════════════════════
+// TAB NAVIGATION
+// ═══════════════════════════════════
+function goTab(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelector('.pages').scrollTop = 0;
+  if (id === 'home') renderHome();
+  if (id === 'hair') renderHairTracker();
+  if (id === 'life') renderLifePage();
+}
+
+// ═══════════════════════════════════
+// LOAD / SAVE
+// ═══════════════════════════════════
+function loadLocal() {
+  try { const d = localStorage.getItem(VER); if (d) S = { ...S, ...JSON.parse(d) }; } catch(e) {}
+}
+function saveLocal() {
+  try { localStorage.setItem(VER, JSON.stringify(S)); } catch(e) {}
+  if (S.drive.connected) scheduleDriveSync();
+}
+
+// ═══════════════════════════════════
+// GOOGLE DRIVE SYNC
+// ═══════════════════════════════════
+const DRIVE_FILENAME = 'andre_dashboard_data.json';
+const CLIENT_ID = '1080826146203-hbe1efu0p52u2oo2jortmkc5uc7btv5l.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+let syncTimer = null;
+
+function showAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
+function dismissAuth()   { document.getElementById('auth-modal').style.display = 'none'; }
+
+function initGoogleDrive() {
+  dismissAuth();
+  setSyncStatus('syncing', 'Connecting…');
+  // Load Google Identity Services
+  const s = document.createElement('script');
+  s.src = 'https://accounts.google.com/gsi/client';
+  s.onload = () => {
+    google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: (resp) => {
+        if (resp.error) { setSyncStatus('error', 'Auth failed'); return; }
+        S.drive.token = resp.access_token;
+        S.drive.connected = true;
+        saveLocal();
+        findOrCreateDriveFile();
+      }
+    }).requestAccessToken();
+  };
+  s.onerror = () => setSyncStatus('error', 'Could not load Google auth');
+  document.head.appendChild(s);
+}
+
+async function findOrCreateDriveFile() {
+  setSyncStatus('syncing', 'Looking for data file…');
+  try {
+    const search = await fetch(
+      `https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FILENAME}' and trashed=false&fields=files(id,name)`,
+      { headers: { Authorization: `Bearer ${S.drive.token}` } }
+    );
+    const res = await search.json();
+    if (res.files && res.files.length > 0) {
+      S.drive.fileId = res.files[0].id;
+      await loadFromDrive();
+    } else {
+      await createDriveFile();
+    }
+  } catch(e) { setSyncStatus('error', 'Drive error'); }
+}
+
+async function createDriveFile() {
+  setSyncStatus('syncing', 'Creating data file…');
+  try {
+    const meta = { name: DRIVE_FILENAME, mimeType: 'application/json' };
+    const body = JSON.stringify(S);
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
+    form.append('file', new Blob([body], { type: 'application/json' }));
+    const r = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+      method: 'POST', headers: { Authorization: `Bearer ${S.drive.token}` }, body: form
+    });
+    const res = await r.json();
+    S.drive.fileId = res.id;
+    saveLocal();
+    setSyncStatus('synced', 'Synced to Drive ✓');
+  } catch(e) { setSyncStatus('error', 'Could not create file'); }
+}
+
+async function loadFromDrive() {
+  setSyncStatus('syncing', 'Loading from Drive…');
+  try {
+    const r = await fetch(`https://www.googleapis.com/drive/v3/files/${S.drive.fileId}?alt=media`, {
+      headers: { Authorization: `Bearer ${S.drive.token}` }
+    });
+    const data = await r.json();
+    const driveAuth = { ...S.drive };
+    const localToday = S.daily?.[today()] || {};
+    // merge drive data in
+    S = { ...S, ...data, drive: driveAuth };
+    // for today specifically: merge both sources keeping any checked item from either
+    const driveToday = S.daily?.[today()] || {};
+    S.daily[today()] = {
+      checks:  { ...driveToday.checks,  ...localToday.checks  },
+      supps:   { ...driveToday.supps,   ...localToday.supps   },
+      clarus:  localToday.clarus  || driveToday.clarus  || false,
+      omnaris: localToday.omnaris || driveToday.omnaris || false,
+    };
+    saveLocal();
+    setSyncStatus('synced', 'Synced · ' + new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }));
+    renderAll();
+  } catch(e) { setSyncStatus('error', 'Could not load from Drive'); }
+}
+
+async function saveToDrive() {
+  if (!S.drive.connected || !S.drive.fileId || !S.drive.token) return;
+  setSyncStatus('syncing', 'Saving…');
+  try {
+    await fetch(`https://www.googleapis.com/upload/drive/v3/files/${S.drive.fileId}?uploadType=media`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${S.drive.token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(S)
+    });
+    setSyncStatus('synced', 'Synced · ' + new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }));
+  } catch(e) { setSyncStatus('error', 'Sync failed'); }
+}
+
+function scheduleDriveSync() {
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(saveToDrive, 3000); // debounce 3s
+}
+
+function setSyncStatus(state, label) {
+  ['sync-dot','sync-dot2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.className = 'sync-dot'; if (state !== 'none') el.classList.add(state); }
+  });
+  ['sync-label','sync-label2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = label;
+  });
+  const btn = document.querySelector('#sync-bar .sync-btn');
+  if (btn) btn.textContent = S.drive.connected ? 'SYNC NOW' : 'CONNECT';
+  if (btn && S.drive.connected) btn.onclick = saveToDrive;
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `andre_dashboard_${today()}.json`;
+  a.click();
+}
+
+function resetAll() {
+  S = { daily:{}, metrics:[], mood:{}, hair:{ washes:[] }, drive: S.drive };
+  saveLocal();
+  renderAll();
+}
+
+// ═══════════════════════════════════
+// CHECK ITEMS
+// ═══════════════════════════════════
+function toggleCheck(id) {
+  const d = todayData();
+  d.checks[id] = !d.checks[id];
+  saveLocal();
+  // update UI
+  const el = document.getElementById('ci-' + id);
+  if (el) el.classList.toggle('done', d.checks[id]);
+  const box = el ? el.querySelector('.check-box') : null;
+  if (box) box.textContent = d.checks[id] ? '✓' : '—';
+  renderHome();
+}
+
+function buildChecks(containerId, habits, colorClass) {
+  const d = todayData();
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  habits.forEach(h => {
+    const done = !!d.checks[h.id];
+    const el = document.createElement('label');
+    el.className = 'check-item' + (done ? ' done' : '');
+    el.id = 'ci-' + h.id;
+    el.setAttribute('onclick', `toggleCheck('${h.id}')`);
+    el.innerHTML = `<div class="check-box">${done ? '✓' : '—'}</div><div><div class="ci-main">${h.label}</div><div class="ci-sub">${h.sub}</div></div>`;
+    container.appendChild(el);
+  });
+}
+
+// ═══════════════════════════════════
+// SUPPLEMENTS
+// ═══════════════════════════════════
+function buildSuppList() {
+  const d = todayData();
+  const container = document.getElementById('supp-list');
+  if (!container) return;
+  container.innerHTML = '';
+  const groups = ['MORNING','PRE-WO','POST-WO','NIGHT'];
+  groups.forEach(group => {
+    const groupSupps = SUPPS.filter(s => s.timing === group);
+    if (!groupSupps.length) return;
+    const lbl = document.createElement('div');
+    lbl.className = 'supp-group-label';
+    lbl.textContent = group === 'PRE-WO' ? 'PRE-WORKOUT' : group === 'POST-WO' ? 'POST-WORKOUT' : group;
+    container.appendChild(lbl);
+    groupSupps.forEach(s => {
+      const done = !!d.supps[s.id];
+      const div = document.createElement('div');
+      div.className = 'supp-item' + (done ? ' done' : '');
+      div.id = 'supp-' + s.id;
+      div.innerHTML = `
+        <div class="supp-top">
+          <div class="supp-check" onclick="toggleSupp('${s.id}')">${done ? '✓' : '—'}</div>
+          <div style="flex:1" onclick="toggleSupp('${s.id}')">
+            <div class="supp-name">${s.name}</div>
+            <div class="supp-meta">
+              <span class="supp-dose">${s.dose}</span>
+              <span class="supp-timing" style="background:${s.timingColor};color:${s.timingText}">${s.timing}</span>
+            </div>
+          </div>
+          <button class="supp-expand" onclick="event.stopPropagation();toggleSuppInfo('${s.id}')">ⓘ</button>
+        </div>
+        <div class="supp-info" id="suppinfo-${s.id}">${s.info}</div>`;
+      container.appendChild(div);
+    });
+  });
+  updateSuppCount();
+}
+
+function toggleSupp(id) {
+  const d = todayData();
+  d.supps[id] = !d.supps[id];
+  saveLocal();
+  const el = document.getElementById('supp-' + id);
+  if (el) {
+    el.classList.toggle('done', d.supps[id]);
+    const chk = el.querySelector('.supp-check');
+    if (chk) chk.textContent = d.supps[id] ? '✓' : '—';
+  }
+  updateSuppCount();
+  renderHome();
+}
+
+function toggleSuppInfo(id) {
+  const el = document.getElementById('suppinfo-' + id);
+  if (el) el.classList.toggle('open');
+}
+
+function updateSuppCount() {
+  const d = todayData();
+  const taken = SUPPS.filter(s => d.supps[s.id]).length;
+  const el = document.getElementById('supp-count');
+  if (el) el.textContent = `${taken} / ${SUPPS.length} taken`;
+}
+
+function resetSupps() {
+  const d = todayData();
+  d.supps = {};
+  saveLocal();
+  buildSuppList();
+  renderHome();
+}
+
+// ═══════════════════════════════════
+// CLARUS
+// ═══════════════════════════════════
+function updateClarusCard() {
+  const d = todayData();
+  // Days until May 5
+  const nextDate = new Date('2026-05-05');
+  const now = new Date();
+  const diff = Math.ceil((nextDate - now) / 86400000);
+  const el = document.getElementById('clarus-days');
+  if (el) el.textContent = diff > 0 ? diff + ' days' : 'INCREASE NOW';
+
+  // Course progress (started ~Apr 16, ~365 days)
+  const startDate = new Date('2026-04-16');
+  const progDays = Math.floor((now - startDate) / 86400000);
+  const pct = Math.min(100, Math.round((progDays / 365) * 100));
+  const progEl = document.getElementById('clarus-prog');
+  if (progEl) progEl.style.width = pct + '%';
+  const pctEl = document.getElementById('clarus-prog-pct');
+  if (pctEl) pctEl.textContent = pct + '%';
+
+  // taken today
+  const chk = document.getElementById('clarus-check');
+  const lbl = document.getElementById('clarus-taken-label');
+  if (d.clarus) {
+    if (chk) { chk.textContent = '✓'; chk.style.background = 'var(--purple)'; chk.style.borderColor = 'var(--purple)'; chk.style.color = '#080808'; }
+    if (lbl) lbl.textContent = 'Clarus taken today ✓';
+  } else {
+    if (chk) { chk.textContent = '—'; chk.style.background = ''; chk.style.borderColor = ''; chk.style.color = ''; }
+    if (lbl) lbl.textContent = 'Mark Clarus taken today';
+  }
+}
+
+function toggleClarus() {
+  const d = todayData();
+  d.clarus = !d.clarus;
+  saveLocal();
+  updateClarusCard();
+  renderHome();
+}
+
+// omnaris
+function toggleCheck_omnaris() {
+  const d = todayData();
+  d.omnaris = !d.omnaris;
+  saveLocal();
+  const el = document.getElementById('omnaris-item');
+  if (el) { el.classList.toggle('done', d.omnaris); const b = el.querySelector('.check-box'); if(b) b.textContent = d.omnaris?'✓':'—'; }
+  renderHome();
+}
+// override generic toggleCheck for omnaris
+const _origToggle = window.toggleCheck;
+
+// ═══════════════════════════════════
+// METRICS
+// ═══════════════════════════════════
+function saveMetrics() {
+  const fields = ['weight','bf','chest','waist','arms','legs'];
+  const entry = { date: today() };
+  let hasData = false;
+  fields.forEach(f => {
+    const val = document.getElementById('metric-' + f)?.value;
+    if (val) { entry[f] = parseFloat(val); hasData = true; }
+  });
+  if (!hasData) return;
+  S.metrics.unshift(entry);
+  if (S.metrics.length > 52) S.metrics = S.metrics.slice(0, 52);
+  saveLocal();
+  fields.forEach(f => { const el = document.getElementById('metric-' + f); if(el) el.value = ''; });
+  renderMetricsHistory();
+}
+
+function renderMetricsHistory() {
+  const container = document.getElementById('metrics-history');
+  if (!container) return;
+  if (!S.metrics.length) { container.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:10px 0">No metrics logged yet</div>'; return; }
+  container.innerHTML = S.metrics.slice(0,5).map(m => {
+    const parts = [];
+    if (m.weight) parts.push(`${m.weight}lbs`);
+    if (m.bf) parts.push(`${m.bf}% BF`);
+    if (m.chest) parts.push(`chest ${m.chest}"`);
+    if (m.waist) parts.push(`waist ${m.waist}"`);
+    if (m.arms) parts.push(`arms ${m.arms}"`);
+    return `<div class="hist-item"><div class="hist-date">${m.date}</div><div class="hist-text">${parts.join(' · ')}</div></div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════
+// MOOD
+// ═══════════════════════════════════
+const MOODS = ['','😞 Rough','😕 Low','😐 Neutral','🙂 Good','😄 Great'];
+function setMood(v) {
+  S.mood[today()] = v;
+  saveLocal();
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('sel', parseInt(b.dataset.mood) === v));
+  const n = document.getElementById('mood-note');
+  if (n) n.textContent = MOODS[v] + ' — logged';
+}
+function renderMood() {
+  const v = S.mood[today()];
+  if (!v) return;
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('sel', parseInt(b.dataset.mood) === v));
+  const n = document.getElementById('mood-note');
+  if (n) n.textContent = MOODS[v] + ' — logged';
+}
+
+// ═══════════════════════════════════
+// BREATHWORK
+// ═══════════════════════════════════
+const BW_PATTERNS = {
+  box:  [{ p:'INHALE',d:4 },{ p:'HOLD',d:4 },{ p:'EXHALE',d:4 },{ p:'HOLD',d:4 }],
+  '478':[{ p:'INHALE',d:4 },{ p:'HOLD',d:7 },{ p:'EXHALE',d:8 }],
+  wim:  [{ p:'INHALE',d:2 },{ p:'EXHALE',d:1 }],
+};
+let bwPattern = 'box', bwRunning = false, bwTimer = null, bwStepIdx = 0, bwStepSec = 0, bwRound = 0;
+
+function setBWPattern(p) {
+  bwPattern = p;
+  stopBreath();
+  ['box','478','wim'].forEach(k => {
+    const el = document.getElementById('bwp-' + k);
+    if (!el) return;
+    el.className = 'tog-btn';
+    if (k === p) { el.style.borderColor='var(--purple)';el.style.background='rgba(168,120,255,.07)';el.style.color='var(--purple)'; }
+    else { el.style.borderColor='';el.style.background='';el.style.color=''; }
+  });
+}
+
+function toggleBreath() {
+  if (bwRunning) stopBreath(); else startBreath();
+}
+
+function startBreath() {
+  bwRunning = true; bwStepIdx = 0; bwStepSec = 0; bwRound = 0;
+  document.getElementById('bw-start-btn').textContent = 'Stop';
+  bwTimer = setInterval(tickBreath, 1000);
+  tickBreath();
+}
+
+function stopBreath() {
+  bwRunning = false;
+  if (bwTimer) { clearInterval(bwTimer); bwTimer = null; }
+  const orb = document.getElementById('bw-orb');
+  const phase = document.getElementById('bw-phase');
+  if (orb) { orb.textContent = '—'; orb.style.transform = 'scale(1)'; }
+  if (phase) phase.textContent = 'PRESS START';
+  const btn = document.getElementById('bw-start-btn');
+  if (btn) btn.textContent = 'Start';
+}
+
+function tickBreath() {
+  const steps = BW_PATTERNS[bwPattern];
+  const step = steps[bwStepIdx];
+  const orb = document.getElementById('bw-orb');
+  const phase = document.getElementById('bw-phase');
+  const remaining = step.d - bwStepSec;
+  if (orb) { orb.textContent = remaining; orb.style.transform = step.p === 'INHALE' ? 'scale(1.15)' : step.p === 'EXHALE' ? 'scale(.88)' : 'scale(1)'; }
+  if (phase) phase.textContent = step.p + ' · round ' + (bwRound + 1);
+  bwStepSec++;
+  if (bwStepSec >= step.d) {
+    bwStepSec = 0; bwStepIdx++;
+    if (bwStepIdx >= steps.length) { bwStepIdx = 0; bwRound++; }
+  }
+}
+
+// ═══════════════════════════════════
+// HAIR ROUTINE
+// ═══════════════════════════════════
+let hairTime = null, hairShower = null, hairNightShower = null, hairOut = null;
+
+function hairDaysSinceWash() {
+  const t = today();
+  const sorted = [...(S.hair.washes||[])].sort().reverse();
+  if (!sorted[0]) return 99;
+  return Math.floor((new Date(t) - new Date(sorted[0])) / 86400000);
+}
+function hairWashedToday() { return (S.hair.washes||[]).includes(today()); }
+function hairShouldWash()  { return hairDaysSinceWash() >= 3; }
+
+function hairLogWash() {
+  const t = today();
+  if (!S.hair.washes) S.hair.washes = [];
+  if (!S.hair.washes.includes(t)) S.hair.washes.push(t);
+  saveLocal(); renderHairTracker();
+}
+function hairUndoWash() {
+  const t = today();
+  S.hair.washes = (S.hair.washes||[]).filter(d => d !== t);
+  saveLocal(); renderHairTracker();
+}
+function hairToggleDay(dateStr) {
+  if (!S.hair.washes) S.hair.washes = [];
+  if (S.hair.washes.includes(dateStr)) S.hair.washes = S.hair.washes.filter(d => d !== dateStr);
+  else S.hair.washes.push(dateStr);
+  saveLocal(); renderHairTracker();
+}
+
+function renderHairTracker() {
+  const t = today();
+  const dotsEl = document.getElementById('hair-dots');
+  const statusEl = document.getElementById('hair-wash-status');
+  const streakEl = document.getElementById('hair-streak-lbl');
+  if (!dotsEl) return;
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate()-i);
+    days.push(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
+  }
+  dotsEl.innerHTML = days.map(d => {
+    const washed = (S.hair.washes||[]).includes(d);
+    const isToday = d === t;
+    const label = isToday ? 'T' : new Date(d+'T12:00:00').toLocaleDateString('en',{weekday:'narrow'});
+    let cls = 'dot'; if(washed) cls+=' washed'; if(isToday) cls+=' today';
+    return `<div class="${cls}" onclick="hairToggleDay('${d}')">${washed?'✓':label}</div>`;
+  }).join('');
+  const diff = hairDaysSinceWash();
+  if (statusEl) {
+    if (diff === 0) { statusEl.textContent='WASHED TODAY ✓'; statusEl.className='card-tag'; }
+    else if (diff <= 2) { statusEl.textContent=diff+'D AGO — OK'; statusEl.className='card-tag'; }
+    else { statusEl.textContent='WASH DUE'; statusEl.className='card-tag orange'; }
+  }
+  if (streakEl) streakEl.textContent = (S.hair.washes||[]).length + ' WASHES LOGGED';
+  renderHairRoutine();
+}
+
+function hairSetTime(t) {
+  hairTime = t;
+  document.getElementById('hair-btn-morning').className = 'tog-btn' + (t==='morning'?' on-gold':'');
+  document.getElementById('hair-btn-night').className = 'tog-btn' + (t==='night'?' on-gold':'');
+  document.getElementById('hair-shower-section').style.display = t==='morning' ? 'block' : 'none';
+  document.getElementById('hair-night-shower-section').style.display = t==='night' ? 'block' : 'none';
+  if (t === 'morning') hairNightShower = null;
+  if (t === 'night') hairShower = null;
+  renderHairRoutine();
+}
+
+function hairSetNightShower(v) {
+  hairNightShower = v;
+  document.getElementById('hair-btn-night-shower').className = 'tog-btn' + (v?' on-green':'');
+  document.getElementById('hair-btn-night-refresh').className = 'tog-btn' + (!v?' on-blue':'');
+  renderHairRoutine();
+}
+function hairSetShower(v) {
+  hairShower = v;
+  document.getElementById('hair-btn-shower').className = 'tog-btn' + (v?' on-green':'');
+  document.getElementById('hair-btn-refresh').className = 'tog-btn' + (!v?' on-blue':'');
+  renderHairRoutine();
+}
+function hairSetOut(v) {
+  hairOut = v;
+  document.getElementById('hair-btn-out').className = 'tog-btn' + (v?' on-blue':'');
+  document.getElementById('hair-btn-home').className = 'tog-btn' + (!v?' on-blue':'');
+  renderHairRoutine();
+}
+
+function hairStep(num, title, tip, color) {
+  const c = color||'green';
+  return `<div class="step-row" onclick="this.classList.toggle('sdone')">
+    <div class="step-num ${c==='green'?'':c}">${num}</div>
+    <div class="step-content"><strong>${title}</strong>${tip?`<span class="stip">${tip}</span>`:''}</div>
+  </div>`;
+}
+
+function renderHairRoutine() {
+  const out = document.getElementById('hair-routine-output');
+  if (!out) return;
+  if (!hairTime || hairOut === null || (hairTime==='morning' && hairShower===null) || (hairTime==='night' && hairNightShower===null)) {
+    out.innerHTML = ''; return;
+  }
+  const washed = hairWashedToday();
+  const washDue = hairShouldWash();
+  let html = '';
+
+  if (hairTime === 'morning') {
+    if (hairShower === false) {
+      if (washDue && !washed) html += `<div class="banner orange"><div class="banner-title">⚠ WASH DUE TODAY</div>Been ${hairDaysSinceWash()} days — try to shampoo tonight or tomorrow.</div>`;
+      html += `<div class="card"><div class="card-header"><span class="card-icon">💧</span><span class="card-title" style="color:var(--gold)">MORNING REFRESH</span><span class="card-tag gold">${hairOut?'GOING OUT':'HOME'}</span></div><div class="card-body"><div class="step-list">
+        ${hairStep(1,'Spray hair with water','Focus on frizzy/flat sections — not soaking wet')}
+        ${hairStep(2,'Small amount of Smoothie','Pea-sized — scrunch upward to reactivate curls')}
+        ${hairStep(3,'Scrunch and leave alone','Air dry — do not touch while drying')}
+      </div></div></div>`;
+      if (hairOut) html += `<div class="banner blue"><div class="banner-title">💡 GOING OUT TIP</div>Flip upside down while scrunching — adds volume and revives curl shape.</div>`;
+    } else {
+      if (washDue && !washed) html += `<div class="banner orange"><div class="banner-title">⚠ WASH DAY RECOMMENDED</div>${hairDaysSinceWash()} days since last wash — shampoo today.</div>`;
+      else if (washed) html += `<div class="banner green"><div class="banner-title">✓ ALREADY WASHED TODAY</div>You're set — just style and go.</div>`;
+      else html += `<div class="banner blue"><div class="banner-title">CO-WASH DAY</div>${hairDaysSinceWash()} day(s) since wash — water rinse or conditioner only.</div>`;
+      html += `<div class="card"><div class="card-header"><span class="card-icon">🌅</span><span class="card-title" style="color:var(--gold)">${washDue&&!washed?'WASH DAY':'MORNING SHOWER'}</span><span class="card-tag gold">${hairOut?'GOING OUT':'HOME'}</span></div><div class="card-body"><div class="step-list">
+        ${washDue&&!washed ? hairStep(1,'Shampoo scalp only','Scrub roots, let rinse through lengths') : hairStep(1,'Wet hair / water rinse','No shampoo needed today')}
+        ${hairStep(2,'Conditioner mid-length to ends','3–5 min, detangle with fingers while in')}
+        ${hairStep(3,'Cool water rinse','Seals cuticle — critical for high porosity hair')}
+        ${hairStep(4,'Microfiber scrunch','Scrunch out excess — hair still very wet')}
+        ${hairStep(5,'Leave-in conditioner','Cantu Leave-In — scrunch in while soaking wet')}
+        ${hairStep(6,'SheaMoisture Smoothie','50¢ piece amount, scrunch upward firmly')}
+        ${hairStep(7,hairOut?'Diffuse or air dry':'Air dry','Do not touch while drying — hands = frizz')}
+        ${hairStep(8,'Scrunch out crunch when fully dry','Gently scrunch downward with palms')}
+      </div></div></div>`;
+      if (washDue && !washed) html += `<button class="pill-btn orange" onclick="hairLogWash()">🚿 Mark as Washed Today</button>`;
+      if (hairOut) html += `<div class="banner blue"><div class="banner-title">💧 FRIZZ TIPS</div>Apply Smoothie upside down for volume. Once dry, fluff roots only — don't touch lengths.</div>`;
+    }
+  } else {
+    // NIGHT
+    if (hairNightShower === false) {
+      // NIGHT REFRESHER
+      if (washDue && !washed) html += `<div class="banner orange"><div class="banner-title">⚠ WASH DUE TODAY</div>Been ${hairDaysSinceWash()} days — try to shampoo tonight or tomorrow morning.</div>`;
+      html += `<div class="card"><div class="card-header"><span class="card-icon">💧</span><span class="card-title" style="color:var(--gold)">NIGHT REFRESH</span><span class="card-tag gold">${hairOut?'GOING OUT':'HOME'}</span></div><div class="card-body"><div class="step-list">
+        ${hairStep(1,'Spray hair with water','Focus on frizzy or flat sections — not soaking wet')}
+        ${hairStep(2,'Small amount of Smoothie','Pea-sized — scrunch upward to reactivate curls')}
+        ${hairStep(3,'Scrunch and leave alone','Let it air dry — do not touch while drying')}
+      </div></div></div>`;
+      if (hairOut) html += `<div class="banner blue"><div class="banner-title">💡 GOING OUT TIP</div>Flip upside down while scrunching — adds volume and revives curl shape.</div>`;
+      else html += `<div class="banner blue"><div class="banner-title">🌙 REFRESHER NIGHT</div>Light refresh only — no heavy products before bed.</div>`;
+    } else {
+      // NIGHT SHOWER
+      if (!washed) html += `<div class="banner orange"><div class="banner-title">💡 CATCH-UP WASH NIGHT</div>Haven't washed today — good time to shampoo now.</div>`;
+      else html += `<div class="banner green"><div class="banner-title">✓ ALREADY WASHED TODAY</div>You're clean — style if going out, rinse only if staying in.</div>`;
+      if (hairOut) {
+        html += `<div class="card"><div class="card-header"><span class="card-icon">🌙</span><span class="card-title" style="color:var(--blue)">NIGHT — GOING OUT</span><span class="card-tag blue">STYLE UP</span></div><div class="card-body"><div class="step-list">
+          ${!washed ? hairStep(1,'Shampoo scalp only','Catch-up wash — scrub roots') : hairStep(1,'Wet hair / water rinse','Refresh before styling')}
+          ${hairStep(2,'Conditioner mid-length to ends','3–5 min, detangle with fingers')}
+          ${hairStep(3,'Cool water rinse','Seals cuticle — high porosity essential')}
+          ${hairStep(4,'Microfiber scrunch','Scrunch out excess — still very wet')}
+          ${hairStep(5,'Leave-in conditioner','Cantu Leave-In — scrunch in while soaking wet')}
+          ${hairStep(6,'SheaMoisture Smoothie','50¢ piece amount, scrunch upward firmly')}
+          ${hairStep(7,'Diffuse or air dry','Do not touch while drying — hands = frizz')}
+          ${hairStep(8,'Scrunch out crunch when fully dry','Gently scrunch downward with palms')}
+        </div></div></div>`;
+        if (!washed) html += `<button class="pill-btn orange" onclick="hairLogWash()">🚿 Mark as Washed Tonight</button>`;
+        html += `<div class="banner blue"><div class="banner-title">💧 GOING OUT TIPS</div>Flip upside down while applying Smoothie for volume. Once dry, only touch the roots.</div>`;
+      } else {
+        html += `<div class="card"><div class="card-header"><span class="card-icon">🌙</span><span class="card-title" style="color:var(--blue)">NIGHT SHOWER</span><span class="card-tag blue">${!washed?'WASH NIGHT':'RINSE ONLY'}</span></div><div class="card-body"><div class="step-list">
+          ${!washed ? hairStep(1,'Shampoo scalp only','Catch-up wash — scrub roots') : hairStep(1,'Wet hair / co-wash','Already washed — conditioner or water only')}
+          ${hairStep(2,'Conditioner mid-length to ends','3–5 min, detangle')}
+          ${hairStep(3,'Cool water rinse','Seals the cuticle — high porosity essential')}
+          ${hairStep(4,'No styling products','Skip Smoothie — you will sleep on it and crush curl pattern')}
+          ${hairStep(5,'Gently pat dry','Microfiber, then air dry before bed')}
+          ${hairStep(6,'Satin pillowcase','Reduces friction and frizz while you sleep')}
+        </div></div></div>`;
+        if (!washed) html += `<button class="pill-btn orange" onclick="hairLogWash()">🚿 Mark as Washed Today</button>`;
+        html += `<div class="banner blue"><div class="banner-title">🌙 NIGHT REMINDER</div>Staying in — skip the Smoothie. Styling happens in the morning.</div>`;
+      }
+    }
+  }
+
+  // products
+  html += `<div class="sec-label">YOUR PRODUCTS</div><div class="card"><div class="card-body" style="padding:4px 14px">
+    ${[['SheaMoisture Shampoo','HAVE IT',''],['SheaMoisture Conditioner','HAVE IT',''],['SheaMoisture Curl Smoothie','HAVE IT',''],['Cantu Leave-In Cream','GET IT ~$10','orange'],['Microfiber Towel','GET IT ~$10','orange'],['Satin Pillowcase','GET IT ~$15','orange']].map(([n,b,c])=>`<div class="check-item" style="cursor:default"><div class="check-box" style="border-color:${c?'var(--orange)':'var(--green)'};color:${c?'var(--orange)':'var(--green)'}">✦</div><div class="ci-main">${n}</div><span class="card-tag ${c}">${b}</span></div>`).join('')}
+  </div></div>`;
+
+  out.innerHTML = html;
+}
+
+// ═══════════════════════════════════
+// HOME PAGE RENDER
+// ═══════════════════════════════════
+function renderHome() {
+  const now = new Date();
+  const hour = now.getHours();
+  const greetings = { morning: 'GOOD MORNING', afternoon: 'GOOD AFTERNOON', evening: 'GOOD EVENING', night: 'GOOD NIGHT' };
+  const g = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : hour < 21 ? 'evening' : 'night';
+  const greeting = document.getElementById('home-greeting');
+  if (greeting) greeting.textContent = greetings[g];
+  const dateEl = document.getElementById('home-date');
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
+
+  const d = todayData();
+  // count all checkables
+  const allIds = [...Object.values(HABITS).flat().map(h=>h.id), ...SUPPS.map(s=>s.id), 'omnaris'];
+  const done = allIds.filter(id => d.checks[id] || d.supps[id] || (id==='omnaris'&&d.omnaris) || (id==='clarus'&&d.clarus)).length;
+  const total = allIds.length + 1; // +1 for clarus
+  const totalDone = done + (d.clarus?1:0);
+
+  const doneEl = document.getElementById('home-done');
+  if (doneEl) doneEl.textContent = `${totalDone}/${total}`;
+
+  // progress ring
+  const ringWrap = document.getElementById('home-ring');
+  if (ringWrap) {
+    const pct = total > 0 ? totalDone / total : 0;
+    const r = 26, circ = 2 * Math.PI * r;
+    const dash = pct * circ;
+    ringWrap.innerHTML = `<div class="ring-wrap" style="width:64px;height:64px">
+      <svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--border)" stroke-width="3"/><circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--green)" stroke-width="3" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-linecap="round"/></svg>
+      <div class="ring-center"><div class="ring-pct">${Math.round(pct*100)}%</div><div class="ring-sub">done</div></div>
+    </div>`;
+  }
+
+  // streak (days with at least 50% done)
+  let streak = 0;
+  const sortedDays = Object.keys(S.daily).sort().reverse();
+  for (const day of sortedDays) {
+    const dd = S.daily[day];
+    const dayTotal = allIds.length + 1;
+    const dayDone = [...Object.values(HABITS).flat().map(h=>h.id)].filter(id=>dd.checks?.[id]).length +
+      SUPPS.filter(s=>dd.supps?.[s.id]).length + (dd.omnaris?1:0) + (dd.clarus?1:0);
+    if (dayDone / dayTotal >= 0.5) streak++; else break;
+  }
+  const streakEl = document.getElementById('home-streak');
+  if (streakEl) streakEl.textContent = streak;
+
+  // quick checklist on home
+  const cl = document.getElementById('home-checklist');
+  if (cl) {
+    const sections = [
+      { label:'💊 Health', items: [{ id:'clarus', label:'Clarus 10mg', done: d.clarus },{ id:'omnaris', label:'Omnaris spray', done: d.omnaris }] },
+      { label:'💪 Body', items: HABITS.gym.slice(0,2).map(h=>({ id:h.id, label:h.label, done:!!d.checks[h.id] })) },
+      { label:'🧠 Mind', items: HABITS.mental.slice(0,2).map(h=>({ id:h.id, label:h.label, done:!!d.checks[h.id] })) },
+      { label:'💆 Hair', items: [{ id:'hair-wash', label: hairWashedToday()?'Hair washed ✓':'Hair wash status', done: hairWashedToday() }] },
+    ];
+    cl.innerHTML = sections.map(sec => `
+      <div style="padding:8px 0 4px"><div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:6px">${sec.label}</div>
+      ${sec.items.map(item => `<label class="check-item${item.done?' done':''}" id="ci-${item.id}" onclick="${item.id==='clarus'?'toggleClarus()':item.id==='hair-wash'?'goTab(\'hair\')':item.id==='omnaris'?'toggleCheck(\'omnaris\')':item.done?'':'toggleCheck(\''+item.id+'\')'}" >
+        <div class="check-box">${item.done?'✓':'—'}</div><div class="ci-main">${item.label}</div>
+      </label>`).join('')}
+      </div>`).join('');
+  }
+}
+
+
+// ═══════════════════════════════════
+// LIFE PAGE
+// ═══════════════════════════════════
+const BIRTHDAY = new Date('1997-04-27');
+
+function renderLifePage() {
+  const now = new Date();
+  const expYears = parseInt(document.getElementById('life-exp-input')?.value || 85);
+
+  // Age
+  let age = now.getFullYear() - BIRTHDAY.getFullYear();
+  const bmonth = now.getMonth() - BIRTHDAY.getMonth();
+  if (bmonth < 0 || (bmonth === 0 && now.getDate() < BIRTHDAY.getDate())) age--;
+
+  // Days lived
+  const daysLived = Math.floor((now - BIRTHDAY) / 86400000);
+  const weeksLived = Math.floor(daysLived / 7);
+  const totalWeeks = expYears * 52;
+  const weeksLeft = Math.max(0, totalWeeks - weeksLived);
+  const lifePct = Math.min(100, (weeksLived / totalWeeks * 100)).toFixed(1);
+
+  // Birthday countdown
+  let nextBday = new Date(now.getFullYear(), BIRTHDAY.getMonth(), BIRTHDAY.getDate());
+  if (nextBday <= now) nextBday.setFullYear(now.getFullYear() + 1);
+  const bdayDays = Math.ceil((nextBday - now) / 86400000);
+
+  // Year progress
+  const yearStart = new Date(now.getFullYear(), 0, 1);
+  const yearEnd = new Date(now.getFullYear() + 1, 0, 1);
+  const yearDaysDone = Math.floor((now - yearStart) / 86400000);
+  const yearDaysTotal = Math.floor((yearEnd - yearStart) / 86400000);
+  const yearDaysLeft = yearDaysTotal - yearDaysDone;
+  const yearPct = (yearDaysDone / yearDaysTotal * 100).toFixed(1);
+
+  // Set values
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  const setW = (id, val) => { const el = document.getElementById(id); if(el) el.style.width = val; };
+
+  set('life-age', age);
+  set('life-days-lived', daysLived.toLocaleString());
+  set('life-weeks-lived', weeksLived.toLocaleString());
+  set('life-weeks-total', totalWeeks.toLocaleString());
+  set('life-weeks-left', weeksLeft.toLocaleString());
+  set('life-pct', lifePct + '% lived');
+  set('life-bday-countdown', bdayDays);
+  set('life-year-left', yearDaysLeft);
+  set('life-year-left2', yearDaysLeft);
+  set('life-year-done', yearDaysDone);
+  set('life-year-pct', yearPct + '%');
+  set('life-expectancy-label', expYears + ' YEAR');
+
+  setTimeout(() => {
+    setW('life-bar', lifePct + '%');
+    setW('life-year-bar', yearPct + '%');
+  }, 100);
+
+  // Fun numbers
+  const nums = document.getElementById('life-numbers');
+  if (nums) {
+    const facts = [
+      ['💓', 'Heartbeats lived (est.)', Math.floor(daysLived * 24 * 60 * 70).toLocaleString()],
+      ['😴', 'Hours slept (est.)', Math.floor(daysLived * 8).toLocaleString()],
+      ['🍽', 'Meals eaten (est.)', Math.floor(daysLived * 3).toLocaleString()],
+      ['🎂', 'Next birthday', nextBday.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})],
+      ['📆', 'Weeks until birthday', Math.floor(bdayDays / 7)],
+      ['🌍', 'Days on Earth', daysLived.toLocaleString()],
+    ];
+    nums.innerHTML = facts.map(([icon, label, val]) => `
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="font-size:20px;width:28px;text-align:center;flex-shrink:0">${icon}</div>
+        <div style="flex:1;font-size:13px;color:var(--muted)">${label}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text)">${val}</div>
+      </div>`).join('');
+  }
+}
+
+// ═══════════════════════════════════
+// FULL RENDER
+// ═══════════════════════════════════
+function renderAll() {
+  renderHome();
+  buildSuppList();
+  updateClarusCard();
+  buildChecks('gym-checks', HABITS.gym);
+  buildChecks('diet-checks', HABITS.diet);
+  buildChecks('mental-checks', HABITS.mental);
+  buildChecks('pe-checks', HABITS.pe);
+  buildChecks('face-checks', HABITS.face);
+  renderMetricsHistory();
+  renderMood();
+  renderHairTracker();
+  renderColdSoreCard();
+  // omnaris
+  const d = todayData();
+  const om = document.getElementById('omnaris-item');
+  if (om) { om.classList.toggle('done', !!d.omnaris); const b = om.querySelector('.check-box'); if(b) b.textContent = d.omnaris?'✓':'—'; }
+  // sync status
+  if (S.drive.connected) setSyncStatus('synced', 'Connected to Drive');
+  else setSyncStatus('none', 'Not connected');
+}
+
+// override toggleCheck to handle omnaris special case
+window.toggleCheck = function(id) {
+  if (id === 'omnaris') {
+    const d = todayData(); d.omnaris = !d.omnaris; saveLocal();
+    const el = document.getElementById('omnaris-item');
+    if (el) { el.classList.toggle('done', d.omnaris); const b = el.querySelector('.check-box'); if(b) b.textContent = d.omnaris?'✓':'—'; }
+    renderHome(); return;
+  }
+  const d = todayData();
+  d.checks[id] = !d.checks[id];
+  saveLocal();
+  const el = document.getElementById('ci-' + id);
+  if (el) { el.classList.toggle('done', d.checks[id]); const b = el.querySelector('.check-box'); if(b) b.textContent = d.checks[id]?'✓':'—'; }
+  renderHome();
+};
+
+// greeting + date update
+function updateGreeting() {
+  const now = new Date();
+  const hour = now.getHours();
+  const g = hour<12?'morning':hour<17?'afternoon':hour<21?'evening':'night';
+  const greetings = { morning:'GOOD MORNING', afternoon:'GOOD AFTERNOON', evening:'GOOD EVENING', night:'GOOD NIGHT' };
+  const el = document.getElementById('home-greeting');
+  if (el) el.textContent = greetings[g];
+  const clk = document.getElementById('home-clock');
+  if (clk) {
+    const h12 = hour % 12 || 12;
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const ampm = hour < 12 ? 'AM' : 'PM';
+    clk.textContent = h12 + ':' + m + ' ' + ampm;
+  }
+  // midnight countdown
+  const mcd = document.getElementById('home-midnight');
+  if (mcd) {
+    const midnight = new Date(); midnight.setHours(24,0,0,0);
+    const diff = midnight - now;
+    const hh = Math.floor(diff/3600000);
+    const mm = Math.floor((diff%3600000)/60000);
+    const ss = Math.floor((diff%60000)/1000);
+    mcd.textContent = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0') + ':' + String(ss).padStart(2,'0') + ' left today';
+  }
+}
+
+// tog-btn gold helper
+document.querySelectorAll('.tog-btn').forEach(b => {
+  b.addEventListener('click', () => {});
+});
+
+
+
+// ═══════════════════════════════════
+// COLD SORE TRACKER
+// ═══════════════════════════════════
+const CS_ITEMS = [
+  { id:'cs-valacyclovir', label:'Valacyclovir', sub:'Antiviral — take as prescribed, ASAP' },
+  { id:'cs-compeed',      label:'Compeed patch', sub:'Physical protection, keeps it moist, hands off' },
+  { id:'cs-abreva',       label:'Abreva',        sub:'Apply around patch edges or when not wearing it' },
+  { id:'cs-ibuprofen',    label:'Ibuprofen',     sub:'Reduces inflammation and pain' },
+  { id:'cs-aquaphor',     label:'Aquaphor / Vaseline', sub:'On the sore and surrounding lips constantly' },
+];
+
+function renderColdSoreCard() {
+  const cardBottom = document.getElementById('cold-sore-card');
+  const cardTop = document.getElementById('cold-sore-card-top');
+  const secLabel = document.getElementById('cs-section-label');
+  const triggerBtn = document.getElementById('cs-trigger-btn');
+  const cs = S.coldSore || { active: false, startDate: null, history: [] };
+  const d = todayData();
+  if (!d.csChecks) d.csChecks = {};
+
+  if (!cs.active) {
+    // Inactive — hide top card, show history note at bottom if any
+    if (cardTop) cardTop.style.display = 'none';
+    if (secLabel) secLabel.style.display = 'none';
+    if (triggerBtn) triggerBtn.style.display = 'block';
+    if (cardBottom) cardBottom.innerHTML = cs.history && cs.history.length
+      ? `<div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);padding:4px 0">Last outbreak: ${cs.history[cs.history.length-1].start} → ${cs.history[cs.history.length-1].end}</div>`
+      : '';
+    return;
+  }
+
+  // Active — show top card, hide trigger btn
+  if (cardTop) cardTop.style.display = 'block';
+  if (secLabel) secLabel.style.display = 'none';
+  if (triggerBtn) triggerBtn.style.display = 'none';
+  if (cardBottom) cardBottom.innerHTML = '';
+
+  const startDate = new Date(cs.startDate + 'T12:00:00');
+  const now = new Date();
+  const dayNum = Math.floor((now - startDate) / 86400000) + 1;
+  const totalDays = 10;
+
+  // Timeline dots
+  const timelineDots = Array.from({length: totalDays}, (_, i) => {
+    let cls = 'cs-tday';
+    if (i + 1 < dayNum) cls += ' past';
+    if (i + 1 === dayNum) cls += ' today-dot';
+    return '<div class="' + cls + '"></div>';
+  }).join('');
+
+  // Checklist — Valacyclovir is one-time, rest are daily
+  const valaKey = 'cs-valacyclovir-taken';
+  const valaTaken = !!cs[valaKey];
+  const valaTakenDate = cs[valaKey + '-date'] || null;
+
+  const dailyItems = [
+    { id:'cs-compeed',    label:'Compeed patch',       sub:'Physical protection — keep it moist, hands off' },
+    { id:'cs-abreva',     label:'Abreva',              sub:'Apply around patch edges or when not wearing it' },
+    { id:'cs-ibuprofen',  label:'Ibuprofen',           sub:'Reduces inflammation and pain' },
+    { id:'cs-aquaphor',   label:'Aquaphor / Vaseline', sub:'On the sore and surrounding lips constantly' },
+  ];
+
+  const dailyChecks = dailyItems.map(function(item) {
+    const done = !!d.csChecks[item.id];
+    const cls = done ? " done" : "";
+    const chk = done ? "\u2713" : "";
+    const id = item.id;
+    return "<div class=\"cs-check" + cls + "\" onclick=\"csToggleCheck(\'" + id + "\')\">" +
+      "<div class=\"cs-check-box\">" + chk + "</div>" +
+      "<div style=\"flex:1\"><div class=\"cs-check-label\">" + item.label + "</div>" +
+      "<div class=\"cs-check-sub\">" + item.sub + "</div></div></div>";
+  }).join("");
+
+  // Valacyclovir one-time block
+  const valaHtml = `<div class="cs-check${valaTaken ? ' done' : ''}" onclick="${valaTaken ? '' : 'csMarkVala()'}" style="${valaTaken ? 'cursor:default' : ''}">
+    <div class="cs-check-box">${valaTaken ? '✓' : ''}</div>
+    <div style="flex:1">
+      <div class="cs-check-label">Valacyclovir</div>
+      <div class="cs-check-sub">${valaTaken ? 'One-time dose taken — ' + (valaTakenDate || 'Day 1') : 'One-time dose — tap to mark taken'}</div>
+    </div>
+  </div>`;
+
+  const activeHtml = `<div class="cs-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="cs-title">🦠 ACTIVE OUTBREAK</div>
+      <button style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green);background:rgba(184,240,80,.08);border:1px solid rgba(184,240,80,.2);border-radius:6px;padding:4px 10px;cursor:pointer" onclick="csEndOutbreak()">✓ Healed</button>
+    </div>
+    <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:10px">
+      <div>
+        <div class="cs-day-badge">DAY ${dayNum}</div>
+        <div class="cs-day-label">STARTED ${cs.startDate}</div>
+      </div>
+      <div style="flex:1;text-align:right">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:6px">${Math.max(0, totalDays - dayNum + 1)} days left (~)</div>
+        <div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">SET DAY:</span>
+          <input type="number" min="1" max="10" value="${dayNum}" style="width:44px;background:var(--s2);border:1px solid var(--border2);border-radius:6px;padding:3px 6px;color:var(--red);font-family:'DM Mono',monospace;font-size:12px;text-align:center;outline:none" onchange="csSetDay(this.value)">
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">TIMELINE (DAY ${dayNum} OF ${totalDays})</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;padding:2px 8px;border-radius:20px;${dayNum >= 4 ? 'background:rgba(184,240,80,.1);color:var(--green)' : 'background:rgba(240,80,80,.1);color:var(--red)'}">${dayNum >= 4 ? '✓ LOW RISK' : '⚠ INFECTIOUS — DAY ' + dayNum + '/3'}</div>
+    </div>
+    <div class="cs-timeline">${timelineDots}</div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:8px">Days 1–3 highest contagion risk · Day 4+ viral shedding drops significantly</div>
+    <div class="cs-lysine-note">⚡ BUMP LYSINE TO 1–3g/day during outbreak (normal: 1g)</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin:12px 0 6px">TREATMENT</div>
+    <div class="cs-checklist">${valaHtml}${dailyChecks}</div>
+  </div>`;
+
+    if (cardTop) cardTop.innerHTML = activeHtml;
+}
+
+function csStartOutbreak() {
+  if (!S.coldSore) S.coldSore = { active: false, startDate: null, history: [] };
+  S.coldSore.active = true;
+  S.coldSore.startDate = today();
+  saveLocal();
+  renderColdSoreCard();
+}
+
+function csEndOutbreak() {
+  if (!S.coldSore) return;
+  if (!S.coldSore.history) S.coldSore.history = [];
+  S.coldSore.history.push({ start: S.coldSore.startDate, end: today() });
+  S.coldSore.active = false;
+  S.coldSore.startDate = null;
+  // Clear one-time vala flags for next outbreak
+  delete S.coldSore['cs-valacyclovir-taken'];
+  delete S.coldSore['cs-valacyclovir-taken-date'];
+  saveLocal();
+  renderColdSoreCard();
+}
+
+function csToggleCheck(id) {
+  const d = todayData();
+  if (!d.csChecks) d.csChecks = {};
+  d.csChecks[id] = !d.csChecks[id];
+  saveLocal();
+  renderColdSoreCard();
+}
+
+function csSetDay(dayVal) {
+  const day = parseInt(dayVal);
+  if (isNaN(day) || day < 1 || day > 10) return;
+  const newStart = new Date();
+  newStart.setDate(newStart.getDate() - (day - 1));
+  S.coldSore.startDate = newStart.getFullYear() + '-' + String(newStart.getMonth()+1).padStart(2,'0') + '-' + String(newStart.getDate()).padStart(2,'0');
+  saveLocal();
+  renderColdSoreCard();
+}
+
+function csMarkVala() {
+  if (!S.coldSore) return;
+  S.coldSore['cs-valacyclovir-taken'] = true;
+  S.coldSore['cs-valacyclovir-taken-date'] = 'Day ' + (Math.floor((new Date() - new Date(S.coldSore.startDate + 'T12:00:00')) / 86400000) + 1);
+  saveLocal();
+  renderColdSoreCard();
+}
+
+// ═══════════════════════════════════
+// PIN LOCK
+// ═══════════════════════════════════
+const PIN_CORRECT = '0204';
+const PIN_SESSION_KEY = 'andre_pin_session';
+let pinEntry = '';
+
+function isPinUnlocked() {
+  // session token valid for 8 hours
+  try {
+    const s = sessionStorage.getItem(PIN_SESSION_KEY);
+    if (!s) return false;
+    const { ts } = JSON.parse(s);
+    return (Date.now() - ts) < 8 * 60 * 60 * 1000;
+  } catch(e) { return false; }
+}
+
+function setPinUnlocked() {
+  sessionStorage.setItem(PIN_SESSION_KEY, JSON.stringify({ ts: Date.now() }));
+}
+
+function showPinScreen() {
+  document.getElementById('pin-screen').classList.remove('hidden');
+  pinEntry = '';
+  updatePinDots();
+}
+
+function hidePinScreen() {
+  document.getElementById('pin-screen').classList.add('hidden');
+  // Now safe to init Google Drive
+  initDriveAfterPin();
+}
+
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('pd-' + i);
+    if (!dot) continue;
+    dot.classList.remove('filled','error');
+    if (i < pinEntry.length) dot.classList.add('filled');
+  }
+}
+
+function pinPress(digit) {
+  if (pinEntry.length >= 4) return;
+  pinEntry += digit;
+  updatePinDots();
+  if (pinEntry.length === 4) {
+    setTimeout(() => checkPin(), 150);
+  }
+}
+
+function pinDel() {
+  if (pinEntry.length === 0) return;
+  pinEntry = pinEntry.slice(0, -1);
+  updatePinDots();
+  document.getElementById('pin-error').classList.remove('show');
+}
+
+function checkPin() {
+  if (pinEntry === PIN_CORRECT) {
+    // success — flash green then unlock
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById('pd-' + i);
+      if (dot) dot.classList.add('filled');
+    }
+    setPinUnlocked();
+    setTimeout(() => hidePinScreen(), 300);
+  } else {
+    // wrong — flash red
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById('pd-' + i);
+      if (dot) { dot.classList.remove('filled'); dot.classList.add('error'); }
+    }
+    document.getElementById('pin-error').classList.add('show');
+    setTimeout(() => {
+      pinEntry = '';
+      updatePinDots();
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById('pd-' + i);
+        if (dot) dot.classList.remove('error');
+      }
+    }, 800);
+  }
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+try {
+  loadLocal();
+} catch(e) { console.error('loadLocal error:', e); }
+
+try {
+  renderAll();
+} catch(e) { console.error('renderAll error:', e); }
+
+try {
+  updateGreeting();
+  setInterval(updateGreeting, 1000);
+} catch(e) { console.error('updateGreeting error:', e); }
+
+// PIN — always show on fresh page load
+// sessionStorage clears when browser/tab is closed
+// We force show on every load for security
+try {
+  sessionStorage.removeItem(PIN_SESSION_KEY); // clear any stale session
+  showPinScreen();
+} catch(e) { console.error('PIN init error:', e); showPinScreen(); }
+
+function silentReAuth() {
+  setSyncStatus('syncing', 'Reconnecting…');
+  const s = document.createElement('script');
+  s.src = 'https://accounts.google.com/gsi/client';
+  s.onload = () => {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      prompt: '', // no prompt — silent
+      callback: (resp) => {
+        if (resp.error) {
+          // silent failed — show modal so user can manually reconnect
+          setSyncStatus('error', 'Session expired');
+          setTimeout(() => showAuthModal(), 1000);
+          return;
+        }
+        S.drive.token = resp.access_token;
+        S.drive.connected = true;
+        saveLocal();
+        findOrCreateDriveFile();
+      }
+    });
+    client.requestAccessToken({ prompt: '' });
+  };
+  s.onerror = () => setSyncStatus('error', 'Could not load Google auth');
+  document.head.appendChild(s);
+}
+
+function initDriveAfterPin() {
+  // Set up 45min token refresh interval
+  setInterval(() => { if (S.drive.connected) silentReAuth(); }, 45 * 60 * 1000);
+  if (S.drive.connected && S.drive.fileId) {
+    setTimeout(() => silentReAuth(), 600);
+  } else if (!S.drive.connected) {
+    setTimeout(() => showAuthModal(), 800);
+  }
+}
+
+
+</script>
+</body>
+</html>
