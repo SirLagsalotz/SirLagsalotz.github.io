@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>São Miguel — The Trip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10261f; --ink-soft:#2c4a3e; --paper:#f2efe4; --paper-2:#e7e2d2;
+    --moss:#3b6b4f; --lagoon:#1f7a8c; --sulfur:#e8b23a; --coral:#d65a3a;
+    --line:rgba(16,38,31,.16);
+    --shadow:0 1px 0 rgba(16,38,31,.06), 0 18px 40px -28px rgba(16,38,31,.55);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Space Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  a{color:inherit}
+  img{display:block;max-width:100%}
+  header.hero{position:relative;overflow:hidden;color:var(--paper);
+    background:radial-gradient(120% 80% at 80% -10%, rgba(31,122,140,.30), transparent 55%),
+      radial-gradient(90% 70% at 0% 0%, rgba(232,178,58,.22), transparent 50%),
+      linear-gradient(180deg,#0e211b 0%, #143027 60%, #16352a 100%)}
+  .hero .wrap{padding:46px 22px 60px;position:relative;z-index:2}
+  .kicker{font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:var(--sulfur);font-weight:600;margin:0 0 22px}
+  .hero h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(44px,9vw,100px);line-height:.92;margin:0;letter-spacing:-.02em}
+  .hero h1 em{font-style:italic;color:var(--sulfur)}
+  .hero .sub{max-width:560px;margin:24px 0 0;font-size:clamp(16px,2vw,19px);color:rgba(242,239,228,.82)}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:30px;font-size:14px;color:rgba(242,239,228,.7)}
+  .meta-row b{color:var(--paper);font-weight:600}
+  .contours{position:absolute;inset:0;z-index:1;opacity:.5;pointer-events:none}
+  section{padding:62px 0}
+  .eyebrow{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--moss);font-weight:600;margin:0 0 14px}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4.4vw,40px);line-height:1.02;margin:0 0 8px;letter-spacing:-.01em}
+  .lead{max-width:640px;color:var(--ink-soft);margin:0 0 30px;font-size:17px}
+  .weekends{background:linear-gradient(180deg,var(--paper) 0%, var(--paper-2) 100%);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .fest-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:720px){.fest-grid{grid-template-columns:1fr}}
+  .fest{position:relative;border-radius:18px;padding:30px 28px 28px;color:var(--paper);box-shadow:var(--shadow);overflow:hidden;min-height:230px;display:flex;flex-direction:column;justify-content:flex-end}
+  .fest.white{background:linear-gradient(155deg,#1f7a8c 0%, #155e6e 55%, #0e3f4a 100%)}
+  .fest.verde{background:linear-gradient(155deg,#3b6b4f 0%, #2a5340 55%, #16352a 100%)}
+  .fest .wknd{position:absolute;top:22px;right:24px;text-align:right;font-family:'Fraunces',serif;font-weight:900;font-size:50px;line-height:.8;color:rgba(255,255,255,.16);z-index:0}
+  .fest .wknd span{display:block;font-size:11px;letter-spacing:.2em;font-family:'Space Grotesk';font-weight:600;color:rgba(255,255,255,.5)}
+  .fest .tag{font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;color:var(--sulfur);margin-bottom:10px;position:relative;z-index:1}
+  .fest h3{font-family:'Fraunces',serif;font-weight:600;font-size:26px;margin:0 0 8px;position:relative;z-index:1;letter-spacing:-.01em}
+  .fest p{margin:0 0 14px;font-size:15px;color:rgba(242,239,228,.85);position:relative;z-index:1}
+  .fest .when{font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;position:relative;z-index:1}
+  .fest .dot{width:7px;height:7px;border-radius:50%;background:var(--sulfur)}
+  .fest .maplink{position:relative;z-index:1;margin-top:14px;font-size:13px;font-weight:600;color:var(--paper);text-decoration:underline;text-underline-offset:3px;opacity:.9}
+  .flag{margin-top:24px;font-size:13.5px;color:var(--ink-soft);background:rgba(232,178,58,.16);border:1px solid rgba(232,178,58,.5);border-radius:12px;padding:14px 16px}
+  .flag b{color:var(--ink)}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
+  .chip{font:inherit;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--ink-soft);padding:8px 15px;border-radius:999px;transition:.18s}
+  .chip:hover{border-color:var(--moss);color:var(--ink)}
+  .chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .chip:focus-visible{outline:2px solid var(--lagoon);outline-offset:2px}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:860px){.cards{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.cards{grid-template-columns:1fr}}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;cursor:pointer;transition:transform .16s, box-shadow .16s;text-align:left;font:inherit;color:inherit;padding:0;width:100%}
+  .card:hover{transform:translateY(-3px);box-shadow:0 1px 0 rgba(16,38,31,.06),0 26px 50px -30px rgba(16,38,31,.6)}
+  .card:focus-visible{outline:2px solid var(--lagoon);outline-offset:2px}
+  .card.hide{display:none}
+  .card .thumb{height:128px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .card .thumb .ic{font-size:40px;line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));opacity:.95}
+  .card .thumb::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.06) 0 14px,rgba(255,255,255,0) 14px 28px);pointer-events:none}
+  .card .cat{position:absolute;top:10px;left:10px;z-index:1;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:#fff;background:rgba(16,38,31,.55);padding:4px 9px;border-radius:999px;backdrop-filter:blur(3px)}
+  .card .body{padding:16px 17px 17px;display:flex;flex-direction:column;flex:1}
+  .card h4{font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin:0 0 5px;line-height:1.1}
+  .card .blurb{margin:0 0 12px;font-size:13.5px;color:var(--ink-soft);flex:1}
+  .card .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .card .dist{font-size:12px;color:#7c8a82;font-weight:500}
+  .card .more{font-size:12.5px;font-weight:600;color:var(--lagoon)}
+  .card.warn{border-color:rgba(214,90,58,.55)}
+  .card.warn .cat{background:rgba(168,52,28,.82)}
+  .modal{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center}
+  .modal.open{display:flex}
+  .modal .scrim{position:absolute;inset:0;background:rgba(8,18,14,.62);backdrop-filter:blur(2px)}
+  .sheet{position:relative;z-index:1;background:var(--paper);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;border-radius:20px 20px 0 0;box-shadow:0 -10px 60px rgba(0,0,0,.4);animation:rise .26s ease}
+  @media(min-width:600px){.modal{align-items:center}.sheet{border-radius:20px}}
+  @keyframes rise{from{transform:translateY(24px);opacity:.4}to{transform:translateY(0);opacity:1}}
+  .sheet .hero-img{height:170px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .sheet .hero-img .ic{font-size:62px;line-height:1;filter:drop-shadow(0 3px 10px rgba(0,0,0,.3))}
+  .sheet .hero-img::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.06) 0 18px,rgba(255,255,255,0) 18px 36px);pointer-events:none}
+  .sheet .pad{padding:22px 24px 26px}
+  .sheet .scat{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--moss);margin-bottom:8px}
+  .sheet h3{font-family:'Fraunces',serif;font-weight:600;font-size:27px;margin:0 0 6px;letter-spacing:-.01em}
+  .sheet .meta{font-size:13px;color:#7c8a82;margin:0 0 16px;display:flex;flex-wrap:wrap;gap:6px 16px}
+  .sheet .meta b{color:var(--ink-soft);font-weight:600}
+  .sheet p.desc{font-size:15px;color:var(--ink-soft);margin:0 0 20px}
+  .sheet .warnbox{background:rgba(214,90,58,.12);border:1px solid rgba(214,90,58,.4);border-radius:12px;padding:13px 15px;font-size:13.5px;color:#8a3320;margin:0 0 20px}
+  .sheet .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{font:inherit;font-weight:600;font-size:14px;cursor:pointer;border-radius:11px;padding:12px 18px;border:1px solid var(--line);background:#fff;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:.16s}
+  .btn:hover{border-color:var(--moss)}
+  .btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .btn.primary:hover{background:#173a2d}
+  .closeX{position:absolute;top:14px;right:14px;z-index:2;width:38px;height:38px;border-radius:50%;border:none;background:rgba(16,38,31,.55);color:#fff;font-size:20px;cursor:pointer;line-height:1}
+  .closeX:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .cta{background:var(--ink);color:var(--paper);text-align:center}
+  .cta h2{color:var(--paper)}
+  .cta p{max-width:560px;margin:0 auto 26px;color:rgba(242,239,228,.8);font-size:16px}
+  .cta .btn.primary{background:var(--sulfur);color:#1b1505;border-color:var(--sulfur);font-size:15px;padding:14px 26px}
+  footer{padding:26px 0 40px;color:var(--ink-soft);font-size:13px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header class="hero">
+  <svg class="contours" preserveAspectRatio="none" viewBox="0 0 1080 520" aria-hidden="true">
+    <g fill="none" stroke="rgba(232,178,58,.18)" stroke-width="1.2">
+      <path d="M-40,420 C200,360 380,470 560,400 C760,322 900,420 1120,350"/>
+      <path d="M-40,360 C220,300 360,400 560,340 C780,272 880,350 1120,290"/>
+      <path d="M-40,300 C240,250 360,330 560,280 C800,222 860,290 1120,240"/>
+      <path d="M-40,470 C180,420 400,520 560,450 C740,372 920,470 1120,410"/>
+    </g>
+  </svg>
+  <div class="wrap">
+    <p class="kicker">São Miguel · Azores · The Trip</p>
+    <h1>Two festivals,<br>one <em>volcanic<br>island.</em></h1>
+    <p class="sub">Everything we might get up to between the parties — hot springs, lava caves, golf, twin lakes, plus where to eat and drink. Tap anything to see photos, details and a map. Then tell us what you're up for.</p>
+    <div class="meta-row">
+      <span><b>~Aug 1</b> — White Ocean, Ponta Delgada</span>
+      <span><b>Aug 6–8</b> — Monte Verde, Ribeira Grande</span>
+      <span><b>Base:</b> Ribeira Grande</span>
+    </div>
+  </div>
+</header>
+<section class="weekends" id="festivals">
+  <div class="wrap">
+    <p class="eyebrow">The two fixed points</p>
+    <h2>The festivals</h2>
+    <p class="lead">These are the anchors. Everything else fits around them.</p>
+    <div class="fest-grid">
+      <article class="fest white">
+        <div class="wknd">01<span>first</span></div>
+        <span class="tag">Dress code: white</span>
+        <h3>PDL White Ocean — Festa Branca</h3>
+        <p>Ponta Delgada turns out head-to-toe in white for the city's biggest open-air night — 20 stages through the historic centre, music till 4am, the whole town on its feet.</p>
+        <span class="when"><span class="dot"></span>Likely Sat Aug 1 · 7:30pm–4am · Ponta Delgada</span>
+        <a class="maplink" href="https://www.google.com/maps/search/?api=1&query=37.7394,-25.6685" target="_blank" rel="noopener">Open city centre in Maps ↗</a>
+      </article>
+      <article class="fest verde">
+        <div class="wknd">02<span>second</span></div>
+        <span class="tag">Beachside main stage</span>
+        <h3>MEO Monte Verde Festival</h3>
+        <p>The Azores' biggest music festival, on the sand at Praia do Monte Verde — 10 min from our base. 2026 line-up includes Two Door Cinema Club, James, Calema and Xutos &amp; Pontapés.</p>
+        <span class="when"><span class="dot"></span>Aug 6–8, 2026 · Praia do Monte Verde, Ribeira Grande</span>
+        <a class="maplink" href="https://www.google.com/maps/search/?api=1&query=37.8312,-25.5036" target="_blank" rel="noopener">Open venue in Maps ↗</a>
+      </article>
+    </div>
+    <p class="flag"><b>Heads up on dates:</b> White Ocean is a single Saturday night and usually falls on the first Saturday of August — Aug 1 in 2026 — but the city hasn't published the official 2026 date yet. That puts the two events about 5 days apart, so the days in between (roughly Aug 2–5) are our flexible window for everything below.</p>
+  </div>
+</section>
+<section id="activities">
+  <div class="wrap">
+    <p class="eyebrow">The in-between days</p>
+    <h2>Things to do</h2>
+    <p class="lead">Soak, hike, swim, tee off. Distances are rough drive times from Ribeira Grande. Tap any card for photos, details and a map pin.</p>
+    <div class="filters" role="group" aria-label="Filter activities">
+      <button class="chip" data-grid="act" data-filter="all" aria-pressed="true">All</button>
+      <button class="chip" data-grid="act" data-filter="thermal" aria-pressed="false">Hot springs</button>
+      <button class="chip" data-grid="act" data-filter="nature" aria-pressed="false">Nature &amp; views</button>
+      <button class="chip" data-grid="act" data-filter="water" aria-pressed="false">On the water</button>
+      <button class="chip" data-grid="act" data-filter="active" aria-pressed="false">Golf &amp; caves</button>
+    </div>
+    <div class="cards" id="grid-act"></div>
+  </div>
+</section>
+<section id="food" style="background:linear-gradient(180deg,var(--paper-2) 0%, var(--paper) 100%);border-top:1px solid var(--line)">
+  <div class="wrap">
+    <p class="eyebrow">Where to eat</p>
+    <h2>Restaurants</h2>
+    <p class="lead">A mix near our base and worth-the-drive spots. ★ marks places in or right by Ribeira Grande.</p>
+    <div class="filters" role="group" aria-label="Filter restaurants">
+      <button class="chip" data-grid="food" data-filter="all" aria-pressed="true">All</button>
+      <button class="chip" data-grid="food" data-filter="near" aria-pressed="false">★ Near base</button>
+      <button class="chip" data-grid="food" data-filter="pdl" aria-pressed="false">Ponta Delgada</button>
+      <button class="chip" data-grid="food" data-filter="seafood" aria-pressed="false">Seafood</button>
+    </div>
+    <div class="cards" id="grid-food"></div>
+  </div>
+</section>
+<section id="nightlife">
+  <div class="wrap">
+    <p class="eyebrow">After dark</p>
+    <h2>Bars &amp; clubs</h2>
+    <p class="lead">Most of the nightlife is in Ponta Delgada (~25 min). Cocktail bars are the strength here; a couple of clubs come with a caution — tap to read why.</p>
+    <div class="filters" role="group" aria-label="Filter nightlife">
+      <button class="chip" data-grid="bar" data-filter="all" aria-pressed="true">All</button>
+      <button class="chip" data-grid="bar" data-filter="cocktail" aria-pressed="false">Cocktails</button>
+      <button class="chip" data-grid="bar" data-filter="live" aria-pressed="false">Live music</button>
+      <button class="chip" data-grid="bar" data-filter="club" aria-pressed="false">Clubs</button>
+    </div>
+    <div class="cards" id="grid-bar"></div>
+  </div>
+</section>
+<section id="beaches" style="background:linear-gradient(180deg,var(--paper) 0%, var(--paper-2) 100%);border-top:1px solid var(--line)">
+  <div class="wrap">
+    <p class="eyebrow">Sand &amp; surf</p>
+    <h2>Beaches</h2>
+    <p class="lead">Black volcanic sand and Atlantic swell. One even has thermal-warmed water.</p>
+    <div class="cards" id="grid-beach"></div>
+  </div>
+</section>
+<section class="cta" id="vote">
+  <div class="wrap">
+    <p class="eyebrow" style="color:var(--sulfur)">Help us plan</p>
+    <h2>Tell us what you're up for</h2>
+    <p>Mark what you'd want to do and we'll know when to grab a car and what to book ahead — golf tee times, whale watching and the busy hot springs fill up in August. Takes two minutes.</p>
+    <a class="btn primary" id="formBtn" href="#" target="_blank" rel="noopener">Open the interest form →</a>
+    <p style="font-size:13px;margin-top:18px;opacity:.6">Drop your Google Form link into this button (id="formBtn") once it's made.</p>
+  </div>
+</section>
+<footer>
+  <div class="wrap">Made for the crew · São Miguel, Azores · Dates &amp; details gathered June 2026 — confirm official pages before booking. Photos via Wikimedia Commons.</div>
+</footer>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="scrim" data-close></div>
+  <div class="sheet">
+    <button class="closeX" data-close aria-label="Close">×</button>
+    <div class="hero-img" id="m-img"></div>
+    <div class="pad">
+      <div class="scat" id="m-cat"></div>
+      <h3 id="m-title"></h3>
+      <div class="meta" id="m-meta"></div>
+      <div id="m-warn"></div>
+      <p class="desc" id="m-desc"></p>
+      <div class="actions">
+        <a class="btn primary" id="m-map" target="_blank" rel="noopener">Open in Maps ↗</a>
+        <button class="btn" data-close type="button">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const DATA = {
+  act:[
+    {f:"thermal",cat:"Hot spring",t:"Caldeira Velha",dist:"~20 min",lat:37.7843,lng:-25.5010,
+     blurb:"Jungle hot springs and a warm waterfall on the slopes of Fogo.",
+     meta:["Open 9am–8:30pm","~€10 · 1.5hr slots"],
+     desc:"A 'Jurassic Park' setting — four stone-walled thermal pools and a waterfall basin tucked in rainforest. The most scenic soak on the island. Timed entry caps numbers, so go early or book ahead. Pair it with Lagoa do Fogo just up the road."},
+    {f:"thermal",cat:"Hot spring",t:"Poça da Dona Beija",dist:"~30 min",lat:37.7693,lng:-25.3193,
+     blurb:"Four warm pools open late into the night, in Furnas.",
+     meta:["Open till 11pm","Wear dark swimwear"],
+     desc:"Four open-air pools around 39°C threading along a creek in tropical gardens. Open till 11pm, so an evening soak under the stars is the move. The iron-rich water can stain light swimsuits — bring a dark one and a €1 coin for the hot shower."},
+    {f:"thermal",cat:"Hot spring",t:"Parque Terra Nostra",dist:"~30 min",lat:37.7724,lng:-25.3156,
+     blurb:"A huge ochre thermal pool inside a botanical garden.",
+     meta:["Open 10:30am–4:30pm","€17"],
+     desc:"A giant iron-rich thermal lake — unmistakably orange — at the heart of a beautiful botanical garden in Furnas. Allow 1–2 hours to wander the gardens too. Definitely a dark-swimsuit situation; the water stains everything."},
+    {f:"nature",cat:"Geothermal",t:"Furnas Caldeiras",dist:"~30 min",lat:37.7619,lng:-25.3094,
+     blurb:"Bubbling geysers and the famous underground-cooked stew.",
+     meta:["Free · open access","Cozido lunch ~12:30"],
+     desc:"Steaming fumaroles and boiling mud pots right in the middle of Furnas town. Time it to watch locals dig the cozido stew out of the ground, then eat it for lunch at a nearby restaurant. A proper only-here experience."},
+    {f:"nature",cat:"Crater lake",t:"Lagoa do Fogo",dist:"~20 min",lat:37.7620,lng:-25.4741,
+     blurb:"A wild, undeveloped crater lake with a beach to hike down to.",
+     meta:["Free","Park before 9am"],
+     desc:"The most pristine lake on the island, ringed by green crater walls with no development at all. Hike down to a quiet beach on the shore. Go early — parking fills and the cloud rolls in by mid-morning, taking the view with it."},
+    {f:"nature",cat:"Twin lakes",t:"Lagoa das Sete Cidades",dist:"~45 min",lat:37.8550,lng:-25.7864,
+     blurb:"The iconic blue-and-green twin lakes in a giant crater.",
+     meta:["Free","Furthest — west end"],
+     desc:"The postcard shot of the Azores: two lakes, one blue and one green, inside a vast volcanic caldera, one of the Seven Natural Wonders of Portugal. Viewpoints rim the crater (Vista do Rei, Boca do Inferno hike). The furthest item here, so a half-day on its own."},
+    {f:"nature",cat:"Tea plantation",t:"Gorreana Tea Factory",dist:"~12 min",lat:37.8184,lng:-25.4025,
+     blurb:"Europe's oldest working tea farm — free entry and tasting.",
+     meta:["Open 8am–6pm","Free"],
+     desc:"Working since 1883, the oldest tea plantation in Europe. Wander the rolling green rows down to the ocean, tour the old factory, and taste the tea for free in the café with a balcony view. One of the easiest, closest outings to our base."},
+    {f:"active",cat:"Golf",t:"Batalha Golf Course",dist:"~25 min",lat:37.8041,lng:-25.6338,
+     blurb:"27 holes overlooking the sea, the newer of the two courses.",
+     meta:["Open 8am","~€120 w/ rental"],
+     desc:"Three 9-hole loops on a clifftop course with ocean views and distinctive black-sand bunkers — the more challenging of São Miguel's two courses. Club rental available; book a tee time. (Furnas, the other course, is prettier but further at altitude.)"},
+    {f:"active",cat:"Cave",t:"Gruta do Carvão",dist:"~25 min",lat:37.7482,lng:-25.6871,
+     blurb:"A walk-through lava tube under the edge of Ponta Delgada.",
+     meta:["Tours daily","~€10 short tour"],
+     desc:"An ancient lava tube with a guided walk-through and visitor centre — a solid rainy-day backup. The short tour is ~45 min; the longer crawling tour runs once a week for 5 people and needs booking weeks ahead."},
+    {f:"water",cat:"Boat trip",t:"Whale & dolphin watching",dist:"from PDL ~25 min",lat:37.7394,lng:-25.6685,
+     blurb:"Year-round boat trips — sperm whales and several dolphins.",
+     meta:["Book ahead","Half-day trips"],
+     desc:"The Azores are one of the world's great whale-watching spots. Resident sperm whales and several dolphin species year-round, with a chance of migrating blue whales depending on timing. Trips leave from Ponta Delgada marina and sell out in summer — book early."},
+    {f:"water",cat:"Crater swim",t:"Ilhéu de Vila Franca",dist:"~25 min",lat:37.7000,lng:-25.4433,
+     blurb:"Swim inside the flooded crater of a tiny offshore volcano.",
+     meta:["Summer only","Daily numbers capped"],
+     desc:"A near-perfect circular natural pool — the flooded crater of a tiny volcanic islet off Vila Franca do Campo. A summer boat shuttle takes you over, with daily visitor numbers capped, so plan it in advance."},
+    {f:"water",cat:"Surf lesson",t:"Surf at Santa Bárbara",dist:"~5 min",lat:37.8189,lng:-25.5418,
+     blurb:"Lessons on our closest beach — beginner-friendly.",
+     meta:["Schools on the beach","Gear included"],
+     desc:"The best surf beach on the north coast is right by our base. Santa Bárbara Surf School and others run beginner lessons with boards and wetsuits included — reviewers rave about the instructors. Even total first-timers tend to get standing up."}
+  ],
+  food:[
+    {f:"near seafood",cat:"★ Beach bar",t:"TukáTulá Beach Bar",dist:"~5 min · Santa Bárbara",lat:37.8187,lng:-25.5420,
+     blurb:"Limpets and grilled fish on the sand. Top-rated.",
+     meta:["€€","On the beach"],
+     desc:"On Santa Bárbara beach — the closest spot to base and a perennial favourite. Grilled octopus and tuna, garlic shrimp, limpets, good mojitos, and a terrace over the surf. Great for a long lunch or sunset."},
+    {f:"near seafood",cat:"★ Azorean",t:"Restaurante O Silva",dist:"Ribeira Grande town",lat:37.8131,lng:-25.5341,
+     blurb:"Classic Azorean cooking — local dishes marked on the menu.",
+     meta:["€€","Closed Mon"],
+     desc:"A Ribeira Grande institution for traditional Azorean food, with the classic regional dishes flagged on the menu. Fresh fish, octopus, limpets, perfectly cooked tuna. Pay a little more, but worth it — reserve a table."},
+    {f:"near",cat:"★ Steak",t:"Associação Agrícola",dist:"~8 min",lat:37.8090,lng:-25.5652,
+     blurb:"The island's famous beef steaks, behind a farm depot.",
+     meta:["€€","Open daily till 10pm"],
+     desc:"You drive into an industrial estate and find it behind the tractors — then get some of the best steak on the island, the local beef served with wine-butter sauce and a fried egg. Big, busy, casual, fast. A meat-lover's must."},
+    {f:"near",cat:"★ Music bar",t:"Kalema Bar",dist:"Ribeira Grande",lat:37.8246,lng:-25.5167,
+     blurb:"Cape Verdean food and live music, loved by locals.",
+     meta:["€","Closed Sun"],
+     desc:"A warm, casual spot in Ribeira Grande serving African and Cape Verdean food with live music nights. Samosas, shrimp, a friendly multilingual owner and a real local crowd. Cheap and full of character."},
+    {f:"near",cat:"★ Mexican/grill",t:"D'Quina",dist:"Ribeira Grande",lat:37.8224,lng:-25.5243,
+     blurb:"Cheap and cheerful tacos, grills and steak sandwiches.",
+     meta:["€","Closed Mon"],
+     desc:"A small, friendly Ribeira Grande spot doing tacos, quesadillas and a very good steak sandwich off the grill. Affordable, generous portions, relaxed — an easy casual night near base."},
+    {f:"pdl seafood",cat:"Fresh fish",t:"Gastrónomo",dist:"Ponta Delgada",lat:37.7427,lng:-25.6539,
+     blurb:"Outstanding family-run fish house. Pick from the day's catch.",
+     meta:["€€","Closed Sun · reserve"],
+     desc:"One of the best meals on the island. You're walked to the cold counter to choose from the day's fresh fish, then it's cooked simply and perfectly. Warm, family-run, with owner Sónia treating everyone like an old friend. Book ahead."},
+    {f:"pdl",cat:"Lava-stone grill",t:"Taberna Açor",dist:"Ponta Delgada",lat:37.7403,lng:-25.6670,
+     blurb:"Steak and tuna you cook on hot lava stones at the table.",
+     meta:["€€","Closed Sun/Mon · reserve"],
+     desc:"A fun, high-quality spot where steak and tuna come out on searing lava stones to finish yourself, plus standout blood-sausage-with-pineapple and pineapple sangria. Reserve — it's deservedly popular."},
+    {f:"pdl",cat:"Lively / Portuguese",t:"A Tasca",dist:"Ponta Delgada",lat:37.7410,lng:-25.6674,
+     blurb:"Buzzy, popular, newspaper menus — go early or queue.",
+     meta:["€€","Closed Sun"],
+     desc:"One of the best-known places in town: lively, fun, Portuguese plates to share, menus printed like newspapers. It gets a queue after 5pm, so go early or reserve. Try the kale soup and the fish of the day."},
+    {f:"pdl",cat:"Korean BBQ",t:"Han Table",dist:"Ponta Delgada",lat:37.7386,lng:-25.6706,
+     blurb:"A break from island food — cook-your-own Korean BBQ.",
+     meta:["€€","Closed Tue"],
+     desc:"When you've had your fill of limpets and fish, this is the change of pace: tabletop Korean BBQ — bulgogi, wagyu, dumplings — with excellent friendly service. Spotless and reasonably priced."},
+    {f:"pdl",cat:"Modern tapas",t:"Taberna na Boavista",dist:"Ponta Delgada",lat:37.7440,lng:-25.6685,
+     blurb:"Creative tapas and craft beer with a garden out back.",
+     meta:["€€","No reservations"],
+     desc:"A younger, buzzy spot with a changing tapas menu, good craft beer and a lovely open-air garden. Octopus salad, mussels, cheese, pork belly. No reservations, so arrive early or get lucky."},
+    {f:"seafood",cat:"Seafront seafood",t:"Bar Caloura",dist:"~20 min · south coast",lat:37.7138,lng:-25.4960,
+     blurb:"Tables by the water, catch of the day. Worth the drive.",
+     meta:["€€","Open daily"],
+     desc:"On the south coast at Água de Pau, with tables right at the water's edge. Only seafood — barracuda, sea bream, mussels, the catch of the day — and a stunning ocean view. A lovely drive out for dinner; the pineapple cake is a thing."}
+  ],
+  bar:[
+    {f:"cocktail",cat:"Cocktail bar",t:"Résvés Street Bar",dist:"Ponta Delgada",lat:37.7417,lng:-25.6689,
+     blurb:"Inventive, ever-changing cocktails. Top-rated on the island.",
+     meta:["Closed Mon","Cocktails"],
+     desc:"A tiny gem doing creative one-off cocktails — smoked whisky and port, rum with cocoa and beetroot — plus any classic you fancy. Super-friendly staff and a UV-ink wall you write on. Arguably the best cocktails in town."},
+    {f:"cocktail",cat:"Cocktail bar",t:"SALA Social Bar",dist:"Ponta Delgada",lat:37.7406,lng:-25.6665,
+     blurb:"Innovative drinks, cool music, great atmosphere.",
+     meta:["Open daily","Cocktails"],
+     desc:"Stylish room with cool music, attentive staff and genuinely inventive cocktails — people come back night after night. Good for a couple of well-made drinks before or instead of a club."},
+    {f:"cocktail",cat:"Waterfront",t:"Bar do Pi",dist:"Ponta Delgada marina",lat:37.7391,lng:-25.6604,
+     blurb:"Cheap cocktails by the water, easy and relaxed.",
+     meta:["Closed Tue","€ cocktails"],
+     desc:"A relaxed waterfront bar on the marina with well-priced cocktails (€4–6) that don't skimp on the alcohol, and a nice breezy spot to sit on a warm evening. Restaurants right nearby if you get hungry."},
+    {f:"live",cat:"Pub",t:"Cantinho dos Anjos",dist:"Ponta Delgada",lat:37.7413,lng:-25.6688,
+     blurb:"Cosy pub, classic rock, a whale bone on the wall.",
+     meta:["Closed Sun","Beer & cocktails"],
+     desc:"The closest thing to a proper pub in town — ship memorabilia, a famous whale bone, 70s/80s rock, friendly staff and a mix of locals and travellers. Affordable drinks and the kind of place you become a regular by the second visit."},
+    {f:"live",cat:"Live jazz",t:"Lava Jazz",dist:"Ponta Delgada",lat:37.7389,lng:-25.6744,
+     blurb:"Live jazz and blues with food and cocktails.",
+     meta:["Cover €10–15","Check schedule"],
+     desc:"The island's jazz and blues club — high-calibre local musicians, oysters and burgers, good cocktails. Opening nights vary and reservations help, so check the schedule before heading over. A cover charge applies and goes toward food/drink."},
+    {f:"club live",cat:"Late-night",t:"Raiz Bar",dist:"Ponta Delgada",lat:37.7404,lng:-25.6686,
+     blurb:"Dancing and live music — the safer late-night pick.",
+     meta:["Fri/Sat only","Till 5am"],
+     desc:"Open balconies over the square, live bands and DJs, good cocktails and a dancing crowd — only Fridays and Saturdays, running into the early hours. The most reliable spot if you want to actually dance late without the issues the clubs below have."},
+    {f:"club",cat:"Nightclub",t:"Manta Club",dist:"Ponta Delgada",lat:37.7417,lng:-25.6654,warn:true,
+     blurb:"A club option — but read the caution first.",
+     meta:["Fri–Sun late","⚠ See note"],
+     desc:"A late-night club in the centre. Listed for completeness, but worth knowing what you're walking into before you go.",
+     warnText:"Multiple recent reviews report aggressive door staff and being charged to leave. Go in a group, keep cash minimal, and if the vibe's off, don't engage. For dancing, Raiz Bar is the safer call."},
+    {f:"club",cat:"Nightclub",t:"Karma Privé",dist:"Ponta Delgada",lat:37.7415,lng:-25.6679,warn:true,
+     blurb:"A club option — but read the caution first.",
+     meta:["Wed/Fri/Sat late","⚠ See note"],
+     desc:"Another central late-night club. Included so you know it exists, with the same caveat as Manta.",
+     warnText:"Numerous reviews describe surprise charges (including large fees for a 'lost' drink card) and an uncomfortable atmosphere. We'd steer the group to Raiz Bar or the cocktail bars instead."}
+  ],
+  beach:[
+    {f:"",cat:"Surf beach",t:"Praia de Santa Bárbara",dist:"~5 min",lat:37.8189,lng:-25.5418,
+     blurb:"Long black-sand surf beach. Our closest, with bars and a surf school.",
+     meta:["Lifeguards in season","Free parking"],
+     desc:"A long sweep of black volcanic sand and the north coast's best surf — board-riders, lifeguards, showers, free parking, and beach bars on the cliff for sunset. The default beach day from base."},
+    {f:"",cat:"Warm-water beach",t:"Praia do Fogo (Ribeira Quente)",dist:"~30 min",lat:37.7305,lng:-25.3094,
+     blurb:"Soft black sand and water warmed by thermal springs.",
+     meta:["Lifeguard","Showers & snack bar"],
+     desc:"A calm, clean bay on the south coast where thermal springs surface offshore, leaving the water noticeably warmer than elsewhere. Soft black sand, lifeguard, showers, a snack bar — and an ice-cream truck that sells beer."},
+    {f:"",cat:"Swim beach",t:"Água d'Alto",dist:"~25 min",lat:37.7170,lng:-25.4739,
+     blurb:"Popular south-coast beach, good for swimming. Hike finish.",
+     meta:["Beach bar","Volleyball court"],
+     desc:"One of the south coast's most popular beaches — soft sand, decent swimming, a beach bar, free volleyball court, easy parking. A perfect reward at the end of the Lagoa do Fogo hike, which comes out nearby. Watch the waves; no lifeguard at quiet times."},
+    {f:"",cat:"Secluded cove",t:"Praia Baixa d'Areia",dist:"~25 min",lat:37.7170,lng:-25.5181,
+     blurb:"A quiet, sheltered cove reached by stairs. Less crowded.",
+     meta:["Lifeguard in season","Small parking"],
+     desc:"A small, sheltered cove that stays quieter than the big beaches, with a cliff-top café, showers and lifeguards in swim season. Access is via stairs (no step-free route) and the swell can pick up at high tide — but it's a lovely, calm spot."},
+    {f:"",cat:"Black sand · sunset",t:"Praia dos Mosteiros",dist:"~40 min · west",lat:37.8884,lng:-25.8241,
+     blurb:"Dramatic black sand with sea stacks. Famous sunset spot.",
+     meta:["Café & toilets","Big parking up top"],
+     desc:"Out at the wild western tip, framed by sheer cliffs and offshore rock stacks. Fine black volcanic sand (gets hot — bring sandals), big Atlantic waves, a little café and outdoor shower. The island's classic sunset beach, worth timing for golden hour."},
+    {f:"",cat:"Easy / closest to PDL",t:"Praia do Pópulo",dist:"~25 min",lat:37.7504,lng:-25.6183,
+     blurb:"Easy dark-sand beach near Ponta Delgada with beach bars.",
+     meta:["Lots of parking","Beach bar"],
+     desc:"The most convenient beach to Ponta Delgada — dark volcanic sand, cool refreshing water, plenty of parking and good food right there (the Sunset Beach Bar is a local favourite). Low-key and easy rather than dramatic; handy if you're already in town."},
+    {f:"",cat:"Natural sea pool",t:"Piscina de Caloura",dist:"~20 min · south",lat:37.7133,lng:-25.4955,
+     blurb:"Volcanic-rock sea pool in a tiny fishing harbour. No sand.",
+     meta:["Lifeguarded","Showers & restaurant"],
+     desc:"Not a sand beach but a sheltered swimming spot — a calm volcanic-rock pool beside a tiny fishing port, with steps straight into the ocean when it's flat. Lifeguards, changing rooms, an excellent fish restaurant above, and birdlife on the cliffs. Lovely on a calm day."},
+    {f:"",cat:"Remote / adventure",t:"Praia do Lombo Gordo",dist:"~1hr · far east",lat:37.7874,lng:-25.1426,
+     blurb:"Isolated black-sand beach. Steep access, almost empty.",
+     meta:["Lifeguard","Steep narrow road + stairs"],
+     desc:"A genuinely secluded black-sand beach in the far-east Nordeste — a narrow single-track drive down then ~100 stairs to reach it, which keeps the crowds away (often near-empty). Toilets and a lifeguard on site. A proper adventure outing rather than a quick dip; not for anyone with mobility issues."}
+  ]
+};
+function mapsUrl(lat,lng){return "https://www.google.com/maps/search/?api=1&query="+lat+","+lng;}
+
+/* Placeholder visual: pick an emoji + gradient from the item's section + category keywords. */
+function visual(key,d){
+  const c=(d.cat+' '+d.t).toLowerCase();
+  let ic='📍', g='linear-gradient(150deg,#3b6b4f,#16352a)';
+  if(key==='act'){
+    if(/hot spring|thermal/.test(c)){ic='♨️';g='linear-gradient(150deg,#e8b23a,#c2772a)';}
+    else if(/geothermal|caldeira/.test(c)){ic='🌋';g='linear-gradient(150deg,#c2772a,#7a2e1c)';}
+    else if(/twin lake|crater lake/.test(c)){ic='🏞️';g='linear-gradient(150deg,#1f7a8c,#0e3f4a)';}
+    else if(/tea/.test(c)){ic='🍵';g='linear-gradient(150deg,#3b6b4f,#234a35)';}
+    else if(/golf/.test(c)){ic='⛳';g='linear-gradient(150deg,#3b6b4f,#1d3a2a)';}
+    else if(/cave/.test(c)){ic='🕳️';g='linear-gradient(150deg,#3a4a44,#16221e)';}
+    else if(/boat|whale/.test(c)){ic='🐋';g='linear-gradient(150deg,#1f7a8c,#103a44)';}
+    else if(/crater swim|islet/.test(c)){ic='🏝️';g='linear-gradient(150deg,#1f9aa0,#0e5560)';}
+    else if(/surf/.test(c)){ic='🏄';g='linear-gradient(150deg,#1f7a8c,#155e6e)';}
+    else {ic='⛰️';g='linear-gradient(150deg,#3b6b4f,#16352a)';}
+  } else if(key==='food'){
+    if(/beach bar/.test(c)){ic='🍹';g='linear-gradient(150deg,#1f7a8c,#155e6e)';}
+    else if(/seafood|fish/.test(c)){ic='🐟';g='linear-gradient(150deg,#1f7a8c,#0e3f4a)';}
+    else if(/steak/.test(c)){ic='🥩';g='linear-gradient(150deg,#a8431c,#5e2415)';}
+    else if(/korean|bbq/.test(c)){ic='🍖';g='linear-gradient(150deg,#c2772a,#7a3a1c)';}
+    else if(/tapas/.test(c)){ic='🫒';g='linear-gradient(150deg,#3b6b4f,#234a35)';}
+    else if(/mexican|grill/.test(c)){ic='🌮';g='linear-gradient(150deg,#e8b23a,#b9701f)';}
+    else if(/music/.test(c)){ic='🎶';g='linear-gradient(150deg,#7a3a5e,#3a1d2e)';}
+    else {ic='🍽️';g='linear-gradient(150deg,#3b6b4f,#234a35)';}
+  } else if(key==='bar'){
+    if(/cocktail|waterfront/.test(c)){ic='🍸';g='linear-gradient(150deg,#7a3a5e,#2e1d3a)';}
+    else if(/jazz|live/.test(c)){ic='🎷';g='linear-gradient(150deg,#3a2d5e,#1d1730)';}
+    else if(/pub/.test(c)){ic='🍺';g='linear-gradient(150deg,#c2772a,#6e3f15)';}
+    else if(/club|late/.test(c)){ic='🪩';g='linear-gradient(150deg,#2c2c4a,#15152a)';}
+    else {ic='🍷';g='linear-gradient(150deg,#5e2c3a,#2e151d)';}
+  } else { /* beaches */
+    if(/sea pool|natural/.test(c)){ic='🧜';g='linear-gradient(150deg,#1f9aa0,#0e5560)';}
+    else if(/warm/.test(c)){ic='♨️';g='linear-gradient(150deg,#1f7a8c,#c2772a)';}
+    else if(/surf/.test(c)){ic='🏄';g='linear-gradient(150deg,#1f7a8c,#155e6e)';}
+    else if(/sunset|mosteiros/.test(c)){ic='🌅';g='linear-gradient(150deg,#e8843a,#7a2e3c)';}
+    else if(/remote|adventure/.test(c)){ic='🧭';g='linear-gradient(150deg,#3a4a44,#16221e)';}
+    else {ic='🏖️';g='linear-gradient(150deg,#1f7a8c,#0e3f4a)';}
+  }
+  return {ic,g};
+}
+function buildGrid(key){
+  const grid = document.getElementById('grid-'+key);
+  DATA[key].forEach((d)=>{
+    const v=visual(key,d);
+    const b = document.createElement('button');
+    b.className = 'card'+(d.warn?' warn':'');
+    b.dataset.filter = d.f;
+    b.dataset.ic = v.ic; b.dataset.g = v.g;
+    b.setAttribute('aria-haspopup','dialog');
+    b.innerHTML = '<div class="thumb" style="background:'+v.g+'"><span class="cat">'+d.cat+'</span><span class="ic" aria-hidden="true">'+v.ic+'</span></div>'+
+      '<div class="body"><h4>'+d.t+'</h4><p class="blurb">'+d.blurb+'</p>'+
+      '<div class="row"><span class="dist">'+d.dist+'</span><span class="more">Details →</span></div></div>';
+    b.addEventListener('click',()=>openModal(d,v));
+    grid.appendChild(b);
+  });
+}
+['act','food','bar','beach'].forEach(buildGrid);
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    const g = chip.dataset.grid, f = chip.dataset.filter;
+    document.querySelectorAll('.chip[data-grid="'+g+'"]').forEach(c=>c.setAttribute('aria-pressed','false'));
+    chip.setAttribute('aria-pressed','true');
+    document.querySelectorAll('#grid-'+g+' .card').forEach(card=>{
+      const parts = card.dataset.filter.split(' ');
+      const match = f==='all' || parts.includes(f);
+      card.classList.toggle('hide', !match);
+    });
+  });
+});
+const modal = document.getElementById('modal');
+let lastFocus = null;
+function openModal(d,v){
+  lastFocus = document.activeElement;
+  v = v || visual(Object.keys(DATA).find(k=>DATA[k].includes(d)), d);
+  const hi = document.getElementById('m-img');
+  hi.style.background = v.g;
+  hi.innerHTML = '<span class="ic" aria-hidden="true">'+v.ic+'</span>';
+  document.getElementById('m-cat').textContent = d.cat;
+  document.getElementById('m-title').textContent = d.t;
+  document.getElementById('m-meta').innerHTML = '<span><b>📍</b> '+d.dist+'</span>' + (d.meta||[]).map(m=>'<span>'+m+'</span>').join('');
+  document.getElementById('m-warn').innerHTML = d.warn ? '<div class="warnbox"><b>⚠ Caution:</b> '+d.warnText+'</div>' : '';
+  document.getElementById('m-desc').textContent = d.desc;
+  document.getElementById('m-map').href = mapsUrl(d.lat,d.lng);
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
+  document.querySelector('.closeX').focus();
+}
+function closeModal(){
+  modal.classList.remove('open');
+  document.body.style.overflow='';
+  if(lastFocus) lastFocus.focus();
+}
+modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeModal));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeModal();});
+</script>
+</body>
+</html>
